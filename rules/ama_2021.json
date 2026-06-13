@@ -5,6 +5,14 @@
 "extraction_date": "2026-06-13",
 "authority": "AMA_2021",
 "authority_rank": 2,
+"rank_context": "em_code_selection",
+"rank_note": "AMA 2021 is authoritative for office and outpatient E/M code selection (99202-99215) and supersedes CMS 1997 for these codes.",
+"authority_scope": [
+  "em_code_selection",
+  "medical_decision_making",
+  "time_based_coding"
+],
+
 "note": "Supersedes CMS 1997 for codes 99202-99215",
 
 "mdm_2_of_3_rule": {

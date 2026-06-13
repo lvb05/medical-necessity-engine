@@ -1,0 +1,82 @@
+{
+  "document_name": "Clinical Coding Process Review",
+  "version": "Clinical Coding Process Review",
+  "source_file": "clinical_coding_process_review.pdf",
+  "extraction_date": "2026-06-13",
+  "authority": "HAAD",
+  "authority_rank": 1,
+  "rank_context": "local_process_rules",
+  "rank_note": "Supports HAAD local process rules for coder references, query workflows, documentation, training, and claims accuracy.",
+  "authority_scope": [
+    "coder_query_process",
+    "documentation_policy",
+    "training_policy",
+    "claims_submission_accuracy"
+  ],
+  "source_references": {
+    "document": "Understanding Clinical Coding Process Review",
+    "key_sections": [
+      "Coding Practice Policies",
+      "Documentation Policies",
+      "Training Policies/Orientation Policies",
+      "Provider Data and Documentation Accuracy",
+      "Claims Submission Accuracy"
+    ],
+    "source_pages": [1, 2, 3, 4]
+  },
+  "coding_practice_policies": {
+    "rules": [
+      "Coders must know the available references.",
+      "Coders must have access to HAAD Coding Manual, HAAD Adjudication rules, and other standards references.",
+      "Coders and staff must understand HAAD Code of Ethics.",
+      "Coder-physician query process must exist with timelines.",
+      "Pre-authorization workflows must have access to the patient's medical record.",
+      "Coding quality checks and resubmissions must be governed by policy."
+    ]
+  },
+  "documentation_policies": {
+    "rules": [
+      "Documentation must be completed within 24 hours.",
+      "Medical record must be complete.",
+      "Documentation must support medical necessity.",
+      "Reason for encounter, history, physical exam findings, and diagnostic results must be documented.",
+      "Assessment/clinical impression/diagnosis and plan of care must be documented.",
+      "Corrections, delayed entries, amendments, authentications, time, date, and signatures must be governed by policy.",
+      "PHI security/privacy must be protected.",
+      "EHR integrity must be maintained.",
+      "Copy-paste misuse must be controlled.",
+      "Narrative diagnosis is preferred over dropdown-only selection."
+    ]
+  },
+  "training_policies": {
+    "rules": [
+      "New staff must be oriented to the organization and technical applications.",
+      "Staff must receive ongoing training and education.",
+      "Staff must know their roles.",
+      "Training must fit the setting.",
+      "Coding staff should review HAAD guidelines, specialty topics, E/M documentation, ICD-10-CM awareness, and updates."
+    ]
+  },
+  "claims_submission_accuracy": {
+    "risk_areas": [
+      "Overbilled or under-billed services",
+      "Undocumented services",
+      "Unbilled documented services",
+      "Violation of HAAD official coding guidelines",
+      "Documentation inadequate for billed level of service",
+      "Noncompliance with HAAD adjudication rules",
+      "Incorrect place or category of service",
+      "Medical necessity not supported"
+    ],
+    "top_checkpoints": [
+      "Up-coding or down-coding",
+      "Missing or incorrect chief complaint",
+      "Assessment/plan unclear",
+      "Documentation not signed",
+      "Billed test not documented",
+      "Incorrect diagnosis for medical necessity",
+      "Illegible documentation"
+    ],
+    "quality_criteria": ["Accuracy", "Completeness"]
+  }
+}

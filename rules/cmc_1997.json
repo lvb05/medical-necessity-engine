@@ -5,6 +5,17 @@
   "extraction_date": "2026-06-13",
   "authority": "CMS_1997",
   "authority_rank": 3,
+  "rank_context": "documentation_framework",
+  "rank_note": "CMS 1997 serves as the fallback documentation framework and history/examination reference. AMA 2021 supersedes CMS 1997 for office and outpatient E/M code selection (99202-99215).",
+  "authority_scope": [
+    "history_documentation",
+    "physical_examination",
+    "ros",
+    "pfsh",
+    "documentation_framework",
+    "fallback_mdm"
+  ],
+  
   "note": "Primary documentation framework for history, examination, and MDM; useful as fallback and for non-99202-99215 documentation rules.",
 
   "source_references": {

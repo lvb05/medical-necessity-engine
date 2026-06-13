@@ -5,6 +5,16 @@
   "extraction_date": "2026-06-13",
   "authority": "JAWDA_2026",
   "authority_rank": 1,
+  "rank_context": "audit_review",
+  "rank_note": "JAWDA is the highest authority for audit review, compliance scoring, claims validation, time-based code verification, consent forms, LAMA forms, physician matching, and KPI validation.",
+  "authority_scope": [
+    "audit_review",
+    "claims_validation",
+    "compliance_scoring",
+    "time_based_code_audit",
+    "kpi_validation"
+  ],
+  
   "scope": "Claims review, clinical coding and billing process review, and KPI data validation for Department of Health Abu Dhabi regulated facilities",
 
   "source_references": {
