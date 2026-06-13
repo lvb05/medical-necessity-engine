@@ -1,6 +1,8 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from app.retrieval.rule_loader import load_rules, get_loaded_authorities
+from app.api.routes.ask import router as ask_router
+from app.api.routes.analyze import router as analyze_router
+from app.retrieval.rule_loader import get_loaded_authorities, load_rules
 from app.schemas import HealthResponse
 
 @asynccontextmanager
@@ -16,6 +18,8 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan,
 )
+app.include_router(ask_router)
+app.include_router(analyze_router)
 
 @app.get("/")
 async def root():
@@ -27,4 +31,4 @@ async def root():
 
 @app.get("/health", response_model=HealthResponse)
 async def health():
-    return {"status": "ok"}
+    return HealthResponse(status="ok")
