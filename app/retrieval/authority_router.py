@@ -26,6 +26,25 @@ _JAWDA_KEYWORDS: Final[tuple[str, ...]] = (
     "score",
     "finding",
     "verification",
+    "audit score",
+    "audit finding",
+    "audit result",
+    "audit compliance",
+    "billing compliance",
+    "coding compliance",
+    "major finding",
+    "minor finding",
+    "time based code",
+    "time-based code",
+    "start and end times",
+    "start time",
+    "end time",
+    "missing lama form",
+    "unsigned lama form",
+    "not verified",
+    "missing signature",
+    "unsigned documentation"
+    
 )
 
 _HAAD_KEYWORDS: Final[tuple[str, ...]] = (
@@ -33,15 +52,20 @@ _HAAD_KEYWORDS: Final[tuple[str, ...]] = (
     "abu dhabi",
     "doh",
     "coder query",
+    "physician query",
+    "provider query",
     "query process",
     "pre-auth",
     "preauthorization",
     "pre authorization",
     "documentation policy",
     "documentation policies",
+    "documentation unclear",
+    "insufficient documentation",
+    "ambiguous documentation",
+    "conflicting documentation",
     "training",
     "ethics",
-    "medical necessity",
     "claims submission",
     "facility policy",
     "coding practice",
@@ -52,6 +76,17 @@ _HAAD_KEYWORDS: Final[tuple[str, ...]] = (
     "claims accuracy",
     "denial",
     "denials",
+    "claim denied",
+    "claim denial",
+    "documentation support",
+    "supporting documentation",
+    "medical record",
+    "coding policy",
+    "coding quality",
+    "charge entry",
+    "pre certification",
+    "medical necessity denial",
+    "medical necessity issue"
 )
 
 _AMA_KEYWORDS: Final[tuple[str, ...]] = (
@@ -61,10 +96,12 @@ _AMA_KEYWORDS: Final[tuple[str, ...]] = (
     "mdm",
     "medical decision making",
     "stable chronic illness",
+    "self-limited problem",
     "chronic illness",
     "acute uncomplicated",
     "risk of complications",
     "data reviewed",
+    "prescription drug management",
     "time-based",
     "99202",
     "99203",
@@ -74,6 +111,19 @@ _AMA_KEYWORDS: Final[tuple[str, ...]] = (
     "99213",
     "99214",
     "99215",
+    "moderate risk",
+    "high risk",
+    "low risk",
+    "straightforward",
+    "office visit",
+    "well-controlled hypertension",
+    "stable chronic condition",
+    "moderate mdm",
+    "low mdm",
+    "high mdm",
+    "cpt code",
+    "em level",
+    "e/m level"
 )
 
 _CMS_KEYWORDS: Final[tuple[str, ...]] = (
@@ -94,6 +144,17 @@ _CMS_KEYWORDS: Final[tuple[str, ...]] = (
     "expanded problem focused",
     "detailed",
     "comprehensive",
+    "history level",
+    "documentation requirements",
+    "past family social history",
+    "comprehensive exam",
+    "detailed history",
+    "history of present illness",
+    "past history",
+    "family history",
+    "social history",
+    "complete history",
+    "problem focused history"
 )
 
 @dataclass(frozen=True, slots=True)

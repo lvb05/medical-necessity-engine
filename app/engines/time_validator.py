@@ -19,6 +19,18 @@ def validate_time(
 ):
 
     findings = []
+    uses_time_coding = (
+        documented_minutes > 0
+        or start_time is not None
+        or end_time is not None
+    )
+
+    if not uses_time_coding:
+        return {
+            "valid": True,
+            "findings": [],
+            "citation": None,
+        }
 
     if cpt_code not in TIME_RANGES:
         findings.append("Unknown CPT")

@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.schemas import AnalyzeRequest, AnalyzeResponse, AuditFindingOut, Citation
+from app.schemas import AnalyzeRequest, AnalyzeResponse, AuditFindingOut, Citation, DocumentationGap
 from app.engines.gap_detector import analyze_encounter
 from app.retrieval.authority_router import route_authority
 
@@ -27,15 +27,11 @@ async def analyze_encounter_api(payload: AnalyzeRequest):
 
     citations = [
         Citation(
-            authority=analysis["citations"][0]["authority"],
-            source_section=analysis["citations"][0]["source_section"],
-            source_page=analysis["citations"][0]["source_page"],
-        ),
-        Citation(
-            authority=analysis["citations"][1]["authority"],
-            source_section=analysis["citations"][1]["source_section"],
-            source_page=analysis["citations"][1]["source_page"],
-        ),
+            authority=item["authority"],
+            source_section=item["source_section"],
+            source_page=item["source_page"],
+        )
+        for item in analysis["citations"]
     ]
 
     if audit_findings:
@@ -45,11 +41,22 @@ async def analyze_encounter_api(payload: AnalyzeRequest):
     else:
         route_chain = list(route.authority_chain)
 
+    documentation_gaps = []
+    for gap in analysis["documentation_gaps"]:
+        documentation_gaps.append(
+            DocumentationGap(
+                gap=gap["gap"],
+                authority=gap["authority"],
+                source_section=gap["source_section"],
+                source_page=gap["source_page"],
+            )
+        )
+    
     return AnalyzeResponse(
         billed_code=payload.billed_code,
         code_supported=analysis["code_supported"],
         recommended_code=analysis["recommended_code"],
-        documentation_gaps=analysis["documentation_gaps"],
+        documentation_gaps=documentation_gaps,
         audit_findings=audit_findings,
         denial_risk=analysis["denial_risk"],
         authority_chain=route_chain,

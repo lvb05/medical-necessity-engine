@@ -47,11 +47,17 @@ class AuditFindingOut(BaseModel):
     source_section: str
     source_page: int | str
 
+class DocumentationGap(BaseModel):
+    gap: str
+    authority: str
+    source_section: str
+    source_page: int | str
+
 class AnalyzeResponse(BaseModel):
     billed_code: str
     code_supported: bool
     recommended_code: str
-    documentation_gaps: list[str]
+    documentation_gaps: list[DocumentationGap]
     audit_findings: list[AuditFindingOut]
     denial_risk: str
     authority_chain: list[str]

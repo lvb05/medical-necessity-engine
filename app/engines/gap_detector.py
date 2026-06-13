@@ -28,32 +28,123 @@ def analyze_encounter(encounter: dict):
 
     time_result = validate_time(
         cpt_code=encounter.get("billed_code", ""),
-        documented_minutes=encounter.get("total_time_minutes", 0),
+        documented_minutes=encounter.get("total_time_minutes") or 0,
         start_time=encounter.get("start_time"),
         end_time=encounter.get("end_time"),
+    )
+
+    uses_time_coding = (
+        (encounter.get("total_time_minutes") or 0) > 0
+        or encounter.get("start_time")
+        or encounter.get("end_time")
     )
 
     documentation_gaps = []
 
     if not encounter.get("chief_complaint"):
-        documentation_gaps.append("Chief complaint missing")
+        documentation_gaps.append(
+            {
+                "gap": "Chief complaint missing",
+                "authority": "CMS_1997",
+                "source_section": "History Documentation",
+                "source_page": 6,
+            }
+        )
 
     documentation = encounter.get("documentation", {})
     if not documentation.get("assessment"):
-        documentation_gaps.append("Assessment missing")
+        documentation_gaps.append(
+            {
+                "gap": "Assessment missing",
+                "authority": "CMS_1997",
+                "source_section": "Documentation Requirements",
+                "source_page": 6,
+            }
+        )
     if not documentation.get("exam"):
-        documentation_gaps.append("Exam missing")
-    if not documentation.get("HPI"):
-        documentation_gaps.append("HPI missing")
+        documentation_gaps.append(
+            {
+                "gap": "Exam missing",
+                "authority": "CMS_1997",
+                "source_section": "Physical Examination",
+                "source_page": 6,
+            }
+        )
+    if not (
+        documentation.get("HPI")
+        or documentation.get("hpi")
+    ):
+        documentation_gaps.append(
+            {
+                "gap": "HPI missing",
+                "authority": "CMS_1997",
+                "source_section": "History of Present Illness",
+                "source_page": 6,
+            }
+        )
 
-    if len(audit_findings) >= 2:
+    if (
+        len(audit_findings) >= 2
+        or len(documentation_gaps) >= 4
+    ):
         denial_risk = "high"
-    elif len(audit_findings) == 1 or not time_result["valid"]:
+    elif (
+        len(audit_findings) == 1
+        or len(documentation_gaps) >= 2
+        or (
+            uses_time_coding
+            and not time_result["valid"]
+        )
+    ):
         denial_risk = "moderate"
     else:
         denial_risk = "low"
 
-    code_supported = encounter.get("billed_code") == mdm.recommended_code and time_result["valid"]
+    if uses_time_coding:
+        code_supported = (
+            encounter.get("billed_code") == mdm.recommended_code
+            and time_result["valid"]
+            and len(documentation_gaps) == 0
+            and len(audit_findings) == 0
+        )
+    else:
+        code_supported = (
+            encounter.get("billed_code") == mdm.recommended_code
+            and len(documentation_gaps) == 0
+            and len(audit_findings) == 0
+        )
+
+    citations = [
+        {
+            "authority": mdm.citation.authority,
+            "source_section": mdm.citation.source_section,
+            "source_page": mdm.citation.source_page,
+        }
+    ]
+    if (
+        time_result["citation"]
+        and (
+            encounter.get("total_time_minutes")
+            or encounter.get("start_time")
+            or encounter.get("end_time")
+        )
+    ):
+        citations.append(
+            {
+                "authority": time_result["citation"].authority,
+                "source_section": time_result["citation"].source_section,
+                "source_page": time_result["citation"].source_page,
+            }
+        )
+    
+    if documentation_gaps:
+        citations.append(
+            {
+                "authority": "CMS_1997",
+                "source_section": "Documentation Requirements",
+                "source_page": 6,
+            }
+        )
 
     return {
         "recommended_code": mdm.recommended_code,
@@ -63,16 +154,5 @@ def analyze_encounter(encounter: dict):
         "audit_findings": audit_findings,
         "total_findings": len(audit_findings),
         "denial_risk": denial_risk,
-        "citations": [
-            {
-                "authority": mdm.citation.authority,
-                "source_section": mdm.citation.source_section,
-                "source_page": mdm.citation.source_page,
-            },
-            {
-                "authority": time_result["citation"].authority,
-                "source_section": time_result["citation"].source_section,
-                "source_page": time_result["citation"].source_page,
-            },
-        ],
+        "citations": citations,
     }
