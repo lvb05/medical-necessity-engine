@@ -3,12 +3,18 @@ from fastapi import APIRouter
 from app.schemas import AnalyzeRequest, AnalyzeResponse, AuditFindingOut, Citation, DocumentationGap
 from app.engines.gap_detector import analyze_encounter
 from app.retrieval.authority_router import route_authority
-
+from fastapi import Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.database import get_db
+from app.models import QueryLog
 router = APIRouter(prefix="/api", tags=["Analyze"])
 
 
 @router.post("/analyze", response_model=AnalyzeResponse)
-async def analyze_encounter_api(payload: AnalyzeRequest):
+async def analyze_encounter_api(
+    payload: AnalyzeRequest,
+    db: AsyncSession = Depends(get_db),
+):
     route = route_authority(question=payload.billed_code, code=payload.billed_code)
     analysis = analyze_encounter(payload.model_dump())
 
@@ -52,6 +58,23 @@ async def analyze_encounter_api(payload: AnalyzeRequest):
             )
         )
     
+    db.add(
+        QueryLog(
+            endpoint="/api/analyze",
+            billed_code=payload.billed_code,
+            authority_used=" -> ".join(route_chain),
+            answer=(
+                f"Supported={analysis['code_supported']}, "
+                f"Recommended={analysis['recommended_code']}"
+            ),
+            denial_risk=analysis["denial_risk"],
+        )
+    )
+    try:
+        await db.commit()
+    except Exception:
+        await db.rollback()
+
     return AnalyzeResponse(
         billed_code=payload.billed_code,
         code_supported=analysis["code_supported"],

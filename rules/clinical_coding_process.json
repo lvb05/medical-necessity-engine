@@ -3,7 +3,7 @@
   "version": "Clinical Coding Process Review",
   "source_file": "clinical_coding_process_review.pdf",
   "extraction_date": "2026-06-13",
-  "authority": "HAAD",
+  "authority": "CLINICAL_CODING_PROCESS",
   "authority_rank": 1,
   "rank_context": "local_process_rules",
   "rank_note": "Supports HAAD local process rules for coder references, query workflows, documentation, training, and claims accuracy.",

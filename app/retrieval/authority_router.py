@@ -17,8 +17,6 @@ _JAWDA_KEYWORDS: Final[tuple[str, ...]] = (
     "kpi",
     "lama",
     "left ama",
-    "time-based",
-    "time based",
     "signature",
     "physician match",
     "drg",
@@ -74,19 +72,13 @@ _HAAD_KEYWORDS: Final[tuple[str, ...]] = (
     "copy-paste",
     "copy paste",
     "claims accuracy",
-    "denial",
-    "denials",
     "claim denied",
     "claim denial",
-    "documentation support",
-    "supporting documentation",
-    "medical record",
     "coding policy",
     "coding quality",
     "charge entry",
     "pre certification",
-    "medical necessity denial",
-    "medical necessity issue"
+    "medical necessity denial"
 )
 
 _AMA_KEYWORDS: Final[tuple[str, ...]] = (
@@ -103,6 +95,7 @@ _AMA_KEYWORDS: Final[tuple[str, ...]] = (
     "data reviewed",
     "prescription drug management",
     "time-based",
+    "cpt",
     "99202",
     "99203",
     "99204",
@@ -118,16 +111,27 @@ _AMA_KEYWORDS: Final[tuple[str, ...]] = (
     "office visit",
     "well-controlled hypertension",
     "stable chronic condition",
+    "qualify for",
+    "code selection",
+    "office outpatient",
+    "evaluation and management",
+    "stable hypertension",
+    "diabetes",
+    "2 of 3",
+    "two of three",
+    "problem complexity",
     "moderate mdm",
     "low mdm",
     "high mdm",
     "cpt code",
+    "data complexity",
+    "total time",
+    "encounter time",
     "em level",
     "e/m level"
 )
 
 _CMS_KEYWORDS: Final[tuple[str, ...]] = (
-    "history",
     "chief complaint",
     "hpi",
     "ros",
@@ -136,14 +140,11 @@ _CMS_KEYWORDS: Final[tuple[str, ...]] = (
     "past family social",
     "physical examination",
     "physical exam",
-    "exam",
     "bullet elements",
     "documentation framework",
     "comprehensive history",
     "problem focused",
     "expanded problem focused",
-    "detailed",
-    "comprehensive",
     "history level",
     "documentation requirements",
     "past family social history",
@@ -182,14 +183,7 @@ def _is_ama_outpatient_code(code: str | None) -> bool:
     return code in AMA_CPT_CODES
 
 def route_authority(question: str, code: str | None = None) -> RouteDecision:
-    """
-    Decide which authority should answer the query.
-    Priority:
-    1) JAWDA audit/compliance
-    2) HAAD local process rules
-    3) AMA 2021 E/M code selection
-    4) CMS 1997 fallback documentation
-    """
+    
     text = (question or "").lower().strip()
     detected_code = (code or "").strip() or _detect_cpt_code(text)
 
@@ -219,6 +213,20 @@ def route_authority(question: str, code: str | None = None) -> RouteDecision:
             matched_terms=jawda_hits,
         )
 
+    if ama_code_match or ama_hits:
+        chain = [AUTHORITY_AMA, AUTHORITY_CMS]
+        return RouteDecision(
+            primary_authority=AUTHORITY_AMA,
+            fallback_authority=AUTHORITY_CMS,
+            context="em_code_selection",
+            reason=(
+                "Query matches AMA 2021 E/M selection terms "
+                f"(code={detected_code or 'none'}, terms={', '.join(ama_hits)})."
+            ),
+            authority_chain=tuple(chain),
+            matched_terms=ama_hits,
+        )
+    
     if haad_hits:
         chain = [AUTHORITY_HAAD]
         if ama_code_match or ama_hits:
@@ -235,20 +243,6 @@ def route_authority(question: str, code: str | None = None) -> RouteDecision:
             ),
             authority_chain=tuple(chain),
             matched_terms=haad_hits,
-        )
-
-    if ama_code_match or ama_hits:
-        chain = [AUTHORITY_AMA, AUTHORITY_CMS]
-        return RouteDecision(
-            primary_authority=AUTHORITY_AMA,
-            fallback_authority=AUTHORITY_CMS,
-            context="em_code_selection",
-            reason=(
-                "Query matches AMA 2021 E/M selection terms "
-                f"(code={detected_code or 'none'}, terms={', '.join(ama_hits)})."
-            ),
-            authority_chain=tuple(chain),
-            matched_terms=ama_hits,
         )
 
     if cms_hits:

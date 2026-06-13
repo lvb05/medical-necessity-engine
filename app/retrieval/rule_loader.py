@@ -153,11 +153,19 @@ def get_rule(key: str) -> dict[str, Any]:
 def get_documents_by_authority(authority: str) -> list[dict[str, Any]]:
     """
     Return all documents whose JSON authority field matches the requested authority.
-    This is important because HAAD appears in both:
-    - haad_process.json
-    - clinical_coding_process.json
+    HAAD is treated as a group that includes both haad_process.json (canonical key HAAD)
+    and clinical_coding_process.json (canonical key CLINICAL_CODING_PROCESS), because
+    the Clinical Coding Process Review is a HAAD-mandated supporting document.
     """
+    _HAAD_GROUP: frozenset[str] = frozenset({"HAAD", "CLINICAL_CODING_PROCESS"})
+
     registry = get_rules()
+    if authority == "HAAD":
+        return [
+            data
+            for key, data in registry.items()
+            if key in _HAAD_GROUP or data.get("authority") == authority
+        ]
     return [
         data
         for key, data in registry.items()
