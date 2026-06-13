@@ -1,0 +1,239 @@
+{
+  "document_name": "1997 Documentation Guidelines for Evaluation and Management Services",
+  "version": "CMS 1997",
+  "source_file": "97 Doc guidelines.pdf",
+  "extraction_date": "2026-06-13",
+  "authority": "CMS_1997",
+  "authority_rank": 3,
+  "note": "Primary documentation framework for history, examination, and MDM; useful as fallback and for non-99202-99215 documentation rules.",
+
+  "source_references": {
+    "document": "1997 Documentation Guidelines for Evaluation and Management Services",
+    "official_title": "Documentation Guidelines for Evaluation and Management Services",
+    "effective_date": "1997",
+    "authority": "CMS_1997",
+    "authority_rank": 3,
+    "key_sections": [
+      "General Principles of Medical Record Documentation",
+      "Documentation of History",
+      "Documentation of Examination",
+      "Documentation of the Complexity of Medical Decision Making",
+      "Table of Risk"
+    ]
+  },
+
+  "general_principles": {
+    "source_section": "General Principles of Medical Record Documentation",
+    "source_page": 4,
+    "principles": [
+      "The medical record should be complete and legible.",
+      "Each encounter should document the reason for the encounter, relevant history, examination findings, prior diagnostic test results, assessment/clinical impression/diagnosis, plan of care, date, and the observer's identity.",
+      "If it is not explicitly documented, the reason for ordering diagnostic or ancillary services should be inferable from the record.",
+      "Past and present diagnoses should be accessible to the treating or consulting physician.",
+      "Appropriate health risk factors should be identified.",
+      "The patient's progress, response to treatment, and revision of diagnosis should be documented.",
+      "Reported CPT and ICD-9-CM codes must be supported by the medical record."
+    ]
+  },
+
+  "documentation_of_history": {
+    "source_section": "Documentation of History",
+    "source_page": 6,
+
+    "history_types_table": {
+      "rule_text": "A history type is valid only when the required CC, HPI, ROS, and PFSH elements for that level are met; chief complaint is required at all levels.",
+      "types": [
+        {
+          "type": "Problem Focused",
+          "hpi": "Brief",
+          "ros": "Not required",
+          "pfsh": "Not required",
+          "source_page": 6
+        },
+        {
+          "type": "Expanded Problem Focused",
+          "hpi": "Brief",
+          "ros": "Problem pertinent",
+          "pfsh": "Not required",
+          "source_page": 6
+        },
+        {
+          "type": "Detailed",
+          "hpi": "Extended",
+          "ros": "Extended",
+          "pfsh": "Pertinent",
+          "source_page": 6
+        },
+        {
+          "type": "Comprehensive",
+          "hpi": "Extended",
+          "ros": "Complete",
+          "pfsh": "Complete",
+          "source_page": 6
+        }
+      ]
+    },
+
+    "chief_complaint": {
+      "exact_definition": "A concise statement of the reason for the encounter, usually in the patient's own words.",
+      "documentation_guideline": "The medical record should clearly reflect the chief complaint.",
+      "source_section": "Documentation of History - Chief Complaint (CC)",
+      "source_page": 6
+    },
+
+    "hpi": {
+      "exact_definition": "A chronological description of the development of the present illness from first sign or symptom to the present.",
+      "elements": [
+        "location",
+        "quality",
+        "severity",
+        "duration",
+        "timing",
+        "context",
+        "modifying factors",
+        "associated signs and symptoms"
+      ],
+      "brief": {
+        "definition": "One to three HPI elements.",
+        "source_page": 7
+      },
+      "extended": {
+        "definition": "At least four HPI elements, or the status of at least three chronic or inactive conditions.",
+        "source_page": 7
+      },
+      "source_section": "Documentation of History - History of Present Illness (HPI)",
+      "source_page": 7
+    },
+
+    "ros": {
+      "exact_definition": "An inventory of body systems obtained through questions about signs or symptoms the patient may be experiencing.",
+      "recognized_systems": [
+        "Constitutional Symptoms",
+        "Eyes",
+        "Ears, Nose, Mouth, and Throat",
+        "Cardiovascular",
+        "Respiratory",
+        "Gastrointestinal",
+        "Genitourinary",
+        "Musculoskeletal",
+        "Integumentary",
+        "Neurological",
+        "Psychiatric",
+        "Endocrine",
+        "Hematologic/Lymphatic",
+        "Allergic/Immunologic"
+      ],
+      "total_systems": 14,
+      "problem_pertinent": {
+        "definition": "Questions about the system directly related to the HPI problem.",
+        "documentation_guideline": "Document positive responses and pertinent negatives for the related system.",
+        "source_page": 8
+      },
+      "extended": {
+        "definition": "Related system plus a limited number of additional systems.",
+        "documentation_guideline": "Document positive responses and pertinent negatives for 2 to 9 systems.",
+        "source_page": 8
+      },
+      "complete": {
+        "definition": "Related system plus all additional body systems.",
+        "documentation_guideline": "Document at least 10 systems; remaining systems may be recorded as negative if clearly stated.",
+        "source_page": 8
+      },
+      "source_section": "Documentation of History - Review of Systems (ROS)",
+      "source_page": 8
+    },
+
+    "pfsh": {
+      "exact_definition": "A review of past history, family history, and social history.",
+      "components": {
+        "past_history": "Past illnesses, operations, injuries, and treatments.",
+        "family_history": "Medical events in the patient's family, including hereditary disease or risk factors.",
+        "social_history": "Age-appropriate review of past and current activities."
+      },
+      "pertinent": {
+        "definition": "History area(s) directly related to the HPI problem.",
+        "documentation_guideline": "At least one specific item from any one of the three areas.",
+        "source_page": 9
+      },
+      "complete_established": {
+        "definition": "Complete PFSH for established patient and certain other categories.",
+        "documentation_guideline": "At least one specific item from two of the three areas.",
+        "source_page": 9
+      },
+      "complete_new": {
+        "definition": "Complete PFSH for new patient and certain comprehensive services.",
+        "documentation_guideline": "At least one specific item from all three areas.",
+        "source_page": 9
+      },
+      "source_section": "Documentation of History - Past, Family and/or Social History (PFSH)",
+      "source_page": 9
+    }
+  },
+
+  "documentation_of_examination": {
+    "source_section": "Documentation of Examination",
+    "source_page": 10,
+
+    "general_multi_system": {
+      "problem_focused": {
+        "requirement": "1 to 5 bullet elements",
+        "source_page": 13
+      },
+      "expanded_problem_focused": {
+        "requirement": "At least 6 bullet elements",
+        "source_page": 13
+      },
+      "detailed": {
+        "requirement": "At least 2 bullet elements from each of 6 areas/systems, or at least 12 bullet elements across 2 or more areas/systems",
+        "source_page": 13
+      },
+      "comprehensive": {
+        "requirement": "At least 9 areas/systems; perform all bullet elements in each selected area/system and document at least 2 elements per area",
+        "source_page": 13
+      }
+    },
+
+    "single_organ_system": {
+      "problem_focused": {
+        "requirement": "1 to 5 bullet elements",
+        "source_page": 18
+      },
+      "expanded_problem_focused": {
+        "requirement": "At least 6 bullet elements",
+        "source_page": 18
+      },
+      "detailed": {
+        "requirement": "At least 12 bullet elements for most systems; at least 9 for eye and psychiatric examinations",
+        "source_page": 18
+      },
+      "comprehensive": {
+        "requirement": "All bullet elements; every element in shaded boxes and at least one element in each unshaded box",
+        "source_page": 18
+      }
+    }
+  },
+
+  "mdm_framework": {
+    "source_section": "Documentation of the Complexity of Medical Decision Making",
+    "source_page": 43,
+    "rule_text": "Two of the three MDM elements must be met or exceeded.",
+    "elements": [
+      "number of diagnoses or management options",
+      "amount and/or complexity of data reviewed",
+      "risk of significant complications, morbidity, and/or mortality"
+    ],
+    "note": "This is the CMS 1997 MDM framework and is useful as a fallback documentation model."
+  },
+
+  "risk_of_significant_complications_morbidity_and_mortality": {
+    "source_section": "Risk of Significant Complications, Morbidity, and/or Mortality",
+    "source_page": 46,
+    "note": "See the Table of Risk on page 47 for the detailed risk categories."
+  },
+
+  "counseling_or_coordination_of_care": {
+    "source_section": "Documentation of an Encounter Dominated by Counseling or Coordination of Care",
+    "source_page": 48,
+    "note": "When counseling or coordination of care dominates the encounter, time becomes the controlling factor."
+  }
+}

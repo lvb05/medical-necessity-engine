@@ -1,0 +1,429 @@
+{
+  "document_name": "JAWDA Data Certification 2026 Part IX",
+  "version": "JAWDA Part IX 2026",
+  "source_file": "JAWDA_Data_Certification_for_Healthcare_Providers_2026-Part_IX(2).pdf",
+  "extraction_date": "2026-06-13",
+  "authority": "JAWDA_2026",
+  "authority_rank": 1,
+  "scope": "Claims review, clinical coding and billing process review, and KPI data validation for Department of Health Abu Dhabi regulated facilities",
+
+  "source_references": {
+    "document": "JAWDA Data Certification 2026 Part IX",
+    "official_title": "JAWDA Data Certification (JDC) for Healthcare Providers - Part 9 (2026)",
+    "effective_date": "2026-12-01",
+    "authority": "JAWDA_2026",
+    "authority_rank": 1,
+    "key_sections": [
+      "Introduction",
+      "Methodology Scope",
+      "Claims Review (Billing, Coding and Compliance) Records Implementation Requirements",
+      "Clinical Coding and Billing Process Review Implementation Requirements",
+      "JAWDA KPI Data Review",
+      "KPI Data Validation Process",
+      "Re-Audit",
+      "Listing and De-Listing",
+      "Appendix-II Scoring Weights & Examples",
+      "Appendix-III Scoring Tables"
+    ]
+  },
+
+  "governance": {
+    "part_9_prevails_over_previous_parts": true,
+    "new_doh_updates_apply_from_publication_date": true,
+    "half_yearly_updates_possible": true,
+    "source_section": "Introduction",
+    "source_page": 5
+  },
+
+  "audit_domains": {
+    "claims_review": true,
+    "clinical_coding_process_review": true,
+    "kpi_data_validation": true,
+    "source_section": "Methodology Scope",
+    "source_page": 5
+  },
+
+  "claims_review_requirements": {
+    "source_section": "8.2 Claims Review (Billing, Coding and Compliance) Records Implementation Requirements",
+    "source_page": "5-6",
+
+    "e_and_m_facility_group_rule": {
+      "rule_text": "Evaluation and Management codes must be billed and verified using the facility group classification instructions, not the individual facility license.",
+      "source_section": "8.2.2 / 4.2.1",
+      "source_page": 5
+    },
+
+    "time_based_codes": {
+      "rule_text": "All time-based codes must have documented start and end times; total time alone is not acceptable.",
+      "trigger": "is_time_based_code == true AND (start_time is missing OR end_time is missing)",
+      "severity": "Major",
+      "points_deducted": 20,
+      "source_section": "8.2.2(ii) / 4.2.1(ii)",
+      "source_page": "5-9"
+    },
+
+    "consent_forms": {
+      "rule_text": "Consent forms for applicable patients must be maintained according to DOH guidance.",
+      "source_section": "8.2.2(iii) / 4.2.1(iii)",
+      "source_page": "5-9"
+    },
+
+    "lama_forms": {
+      "rule_text": "LAMA forms must be duly signed by the patient or authorized relative.",
+      "trigger": "left_ama == true AND lama_form_signed != true",
+      "severity": "Major",
+      "points_deducted": 20,
+      "source_section": "8.2.2(iv) / 4.2.1(iii)",
+      "source_page": "5-9"
+    },
+
+    "diagnostic_reports": {
+      "rule_text": "Diagnostic test reports must be signed by the performing physicians involved.",
+      "trigger": "diagnostic_report_present == true AND performing_physician_signature_missing == true",
+      "severity": "Major",
+      "points_deducted": 20,
+      "source_section": "8.2.2(v) / 4.2.1(vii)",
+      "source_page": "5-9"
+    },
+
+    "patient_signature_authenticity": {
+      "rule_text": "Patient signatures on consent forms must be checked for authenticity and consistency against other relevant documents.",
+      "trigger": "patient_signature_mismatch == true OR patient_details_mismatch == true",
+      "severity": "Major",
+      "points_deducted": 100,
+      "source_section": "4.2.1(iv)-(v) / Appendix-III Table 1",
+      "source_page": "8-9 / 16"
+    },
+
+    "physician_match": {
+      "rule_text": "The billed physician must match the actual service performer; mismatches are non-compliant and may score zero.",
+      "trigger": "billed_physician != actual_service_performer",
+      "severity": "Major",
+      "points_deducted": 20,
+      "zero_score": true,
+      "source_section": "4.2.1(vi) / Appendix-III Table 1",
+      "source_page": "9 / 16"
+    },
+
+    "drgs_in_scope": {
+      "rule_text": "Diagnosis-Related Groups (DRGs) are included in the claims review scope.",
+      "trigger": "drg_mismatch == true",
+      "severity": "Major",
+      "points_deducted": 20,
+      "source_section": "4.2.1(viii) / Appendix-III Table 1",
+      "source_page": "9 / 16"
+    },
+
+    "documentation_unavailable": {
+      "rule_text": "If the required documentation cannot be verified due to unavailability, the item is marked Not Verified and scores zero for that field.",
+      "trigger": "required_documentation_missing == true",
+      "severity": "Zero score for field",
+      "source_section": "4.2.1(ix)",
+      "source_page": 9
+    }
+  },
+
+  "clinical_coding_process_review": {
+    "source_section": "8.3 Clinical Coding Process Review (changed to Clinical Coding and Billing Process Review)",
+    "source_page": 6,
+
+    "confidentiality_rule": {
+      "rule_text": "Physician documentation confidentiality must be preserved; staff should not access other clinicians' documentation.",
+      "source_section": "8.3.2 Clinical Coding Process Review Aspects",
+      "source_page": 6
+    },
+
+    "timeliness_rule": {
+      "rule_text": "Individual documentation timeliness must be maintained by all relevant staff.",
+      "source_section": "8.3.2 Clinical Coding Process Review Aspects",
+      "source_page": 6
+    },
+
+    "staff_scope": [
+      "nurses",
+      "technicians",
+      "MRD personnel",
+      "insurance staff",
+      "medical coders",
+      "other concerned team members"
+    ]
+  },
+
+  "kpi_data_review": {
+    "source_section": "8.4 JAWDA KPI Audit Review Requirements",
+    "source_page": "6, 9-10",
+
+    "required_data_elements": [
+      "RCM data",
+      "clinical coding data",
+      "claims data",
+      "diagnoses",
+      "procedures",
+      "service line items",
+      "physician name",
+      "speciality",
+      "patient date of birth",
+      "age",
+      "gender"
+    ],
+
+    "final_diagnosis_requirement": {
+      "rule_text": "Final diagnosis codes must be accurately reflected in claims after coder review.",
+      "source_section": "8.4 JAWDA KPI Audit Review Requirements",
+      "source_page": 6
+    },
+
+    "zero_submission_rule": {
+      "rule_text": "KPI audits still apply even if a facility submits zero data; missing applicable KPIs count as a major finding.",
+      "trigger": "applicable_kpi_not_submitted == true",
+      "severity": "Major",
+      "source_page": "9-10"
+    },
+
+    "not_verified_rule": {
+      "rule_text": "Indicators not reviewed because required information is missing are classified as Not Verified and incur a score deduction.",
+      "trigger": "required_information_missing == true",
+      "source_page": "9-10"
+    },
+
+    "resubmission_rule": {
+      "rule_text": "Facilities graded C or D in KPI audit must resubmit corrected data within 2 to 4 weeks.",
+      "source_page": "9-10"
+    },
+
+    "new_indicator_rule": {
+      "rule_text": "New indicators may be audited but may be non-scoring in the first cycle.",
+      "source_page": "9-10"
+    }
+  },
+
+  "kpi_validation_process": {
+    "source_section": "4.5 KPI Data Validation Process",
+    "source_page": "10-12",
+
+    "sample_size_rules": [
+      {
+        "submitted_denominator_volume": ">10000",
+        "sample_size": "20 samples",
+        "acceptable_error_count": 2,
+        "indicator_selection_percentage": "15%"
+      },
+      {
+        "submitted_denominator_volume": "5001-10000",
+        "sample_size": "15 samples",
+        "acceptable_error_count": 2,
+        "indicator_selection_percentage": "20%"
+      },
+      {
+        "submitted_denominator_volume": "1001-5000",
+        "sample_size": "10 samples",
+        "acceptable_error_count": 2,
+        "indicator_selection_percentage": "20%"
+      },
+      {
+        "submitted_denominator_volume": "6-1000",
+        "sample_size": "6 to 8 samples",
+        "acceptable_error_count": 1,
+        "indicator_selection_percentage": "25%"
+      },
+      {
+        "submitted_denominator_volume": "5 or below",
+        "sample_size": "100% sample",
+        "acceptable_error_count": 0,
+        "indicator_selection_percentage": "20%"
+      }
+    ],
+
+    "indicator_selection_rules": {
+      "hospitals_1H_to_3H": {
+        "indicators": 20,
+        "audit_duration": "3 days"
+      },
+      "hospitals_4H_to_6H": {
+        "indicators": 32,
+        "audit_duration": "5 days"
+      },
+      "non_hospitals": {
+        "rule": "All applicable KPI indicators are included",
+        "sampling_applies": false
+      }
+    },
+
+    "error_counting_rule": {
+      "rule_text": "All discrepancies within a single sample count as one error. If total errors exceed the acceptable threshold, the indicator is Not Met.",
+      "source_page": "11-12"
+    },
+
+    "scoring_rule": {
+      "rule_text": "Each indicator is scored out of 100 points. A score deduction applies only when the acceptable error threshold is exceeded.",
+      "source_page": 12
+    },
+
+    "not_met_condition": {
+      "rule_text": "If reviewed errors exceed the acceptable error threshold for the sample size, the indicator is classified as Not Met.",
+      "source_page": 12
+    },
+
+    "alternative_quarter_rule": {
+      "rule_text": "If a selected quarter has 0/0 submissions because there were no patients, an alternative quarter with available submissions may be selected.",
+      "source_page": 11
+    }
+  },
+
+  "scoring_weights": {
+    "with_kpi": {
+      "claims_review_score": 40,
+      "clinical_coding_process_review_score": 10,
+      "kpi_data_validation_score": 50,
+      "source_section": "Appendix-II Table 1",
+      "source_page": 14
+    },
+    "without_kpi": {
+      "claims_review_score": 80,
+      "clinical_coding_process_review_score": 20,
+      "source_section": "Appendix-II Table 2",
+      "source_page": 15
+    }
+  },
+
+  "accuracy_error_scoring": {
+    "source_section": "Appendix-III Table 1: Error Scoring for All Settings - Accuracy Errors",
+    "source_page": "16-17",
+    "findings": [
+      {
+        "id": "jawda_001",
+        "category": "Major",
+        "finding": "Mismatching patient signature or patient details",
+        "points_deducted": 100,
+        "consequence": "Claim scored as zero",
+        "trigger": "patient_signature_mismatch == true OR patient_details_mismatch == true"
+      },
+      {
+        "id": "jawda_002",
+        "category": "Major",
+        "finding": "Mismatching billed physician and service performer",
+        "points_deducted": 20,
+        "consequence": "Claim non-compliant; zero score",
+        "trigger": "billed_physician != actual_service_performer"
+      },
+      {
+        "id": "jawda_003",
+        "category": "Major",
+        "finding": "Incorrect Diagnosis-Related Groups (DRGs)",
+        "points_deducted": 20,
+        "trigger": "drg_mismatch == true"
+      },
+      {
+        "id": "jawda_004",
+        "category": "Major",
+        "finding": "Missing required forms",
+        "points_deducted": 20,
+        "trigger": "consent_form_missing == true OR lama_form_missing == true OR lama_form_unsigned == true"
+      },
+      {
+        "id": "jawda_005",
+        "category": "Moderate",
+        "finding": "Incorrect encounter start or end type",
+        "points_deducted": 10,
+        "trigger": "encounter_type_mismatch == true"
+      },
+      {
+        "id": "jawda_006",
+        "category": "Moderate",
+        "finding": "Other billing errors",
+        "points_deducted": 10,
+        "trigger": "billing_error == true OR missing_authentication == true"
+      },
+      {
+        "id": "jawda_007",
+        "category": "Minor",
+        "finding": "Other miscellaneous billing errors / incorrect date",
+        "points_deducted": 5,
+        "trigger": "date_mismatch == true"
+      },
+      {
+        "id": "jawda_008",
+        "category": "Minor",
+        "finding": "Missing demographic details for medical tourism",
+        "points_deducted": 5,
+        "trigger": "medical_tourism_demographics_missing == true"
+      },
+      {
+        "id": "jawda_009",
+        "category": "Moderate",
+        "finding": "Missing non-surgical procedure codes",
+        "points_deducted": 10,
+        "trigger": "documented_non_surgical_procedure_not_coded == true"
+      }
+    ]
+  },
+
+  "dental_accuracy_errors": {
+    "source_section": "Appendix-III Table 2: Dental - Accuracy Errors",
+    "source_page": 17,
+    "findings": [
+      {
+        "id": "jawda_dental_001",
+        "category": "Major",
+        "finding": "Incorrect consumable details",
+        "points_deducted": 20
+      },
+      {
+        "id": "jawda_dental_002",
+        "category": "Moderate",
+        "finding": "Invalid physician license or missing privilege",
+        "points_deducted": 10
+      },
+      {
+        "id": "jawda_dental_003",
+        "category": "Major",
+        "finding": "Billed unbundled procedure",
+        "points_deducted": 10
+      },
+      {
+        "id": "jawda_dental_004",
+        "category": "Major",
+        "finding": "Billed E/M code in dental claim incorrectly",
+        "points_deducted": 10
+      }
+    ]
+  },
+
+  "medical_tourism_rules": {
+    "source_section": "6 Audits on Self-Pay Services / Medical Tourism",
+    "source_page": 13,
+    "submission_required": true,
+    "incomplete_or_inconsistent_submission_penalty": -5,
+    "demographics_required": [
+      "payment field",
+      "patient details"
+    ],
+    "flowchart_verification_required": true
+  },
+
+  "reaudit_rules": {
+    "source_section": "11 Re-Audit",
+    "source_page": 13,
+    "kpi_validation_failure": "Re-audit is conducted on the next subsequent quarter's data submitted after the final audit report.",
+    "claims_failure": "Re-audit is conducted on new claims submitted after the final audit report."
+  },
+
+  "listing_rules": {
+    "source_section": "14 Listing and De-Listing / 20 New Facilities Listing and Extension of Listing",
+    "source_page": 13,
+    "listing_from_audit_date": true,
+    "conditional_listing_for_missing_kpi_data": true,
+    "opt_out_no_extension": true
+  },
+
+  "verification_logic": [
+    "Check whether the code is time-based.",
+    "If time-based, verify both start_time and end_time are documented.",
+    "If either is missing, add a Major finding and deduct 20 points.",
+    "If the patient left AMA, verify the LAMA form exists and is signed.",
+    "If the LAMA form is missing or unsigned, add a Major finding and deduct 20 points.",
+    "Verify that the billed physician matches the actual service performer.",
+    "If they differ, mark the claim non-compliant and zero-score the relevant field.",
+    "For KPI validation, compare sample errors with the acceptable error threshold for the relevant sample size."
+  ]
+}

@@ -1,0 +1,297 @@
+{
+"document_name": "AMA 2021 E/M Office or Other Outpatient Code Changes",
+"version": "AMA 2021",
+"source_file": "AMA Guidelines.pdf",
+"extraction_date": "2026-06-13",
+"authority": "AMA_2021",
+"authority_rank": 2,
+"note": "Supersedes CMS 1997 for codes 99202-99215",
+
+"mdm_2_of_3_rule": {
+  "rule_text": "To qualify for a particular level of MDM, two of the three elements for that level of MDM must be met or exceeded.",
+  "elements": [
+    "number_and_complexity_of_problems",
+    "amount_and_complexity_of_data",
+    "risk_of_complications_morbidity_mortality"
+  ],
+  "source_section": "Table 2: Levels of Medical Decision Making (MDM)",
+  "source_page": 10
+},
+
+"code_mapping": {
+"new_patient": {
+"straightforward": "99202",
+"low": "99203",
+"moderate": "99204",
+"high": "99205"
+},
+"established_patient": {
+"straightforward": "99212",
+"low": "99213",
+"moderate": "99214",
+"high": "99215"
+}
+},
+
+"time_based_codes": {
+"99202": {
+"visit_type": "new",
+"mdm_level": "straightforward",
+"min_minutes": 15,
+"max_minutes": 29
+},
+"99203": {
+"visit_type": "new",
+"mdm_level": "low",
+"min_minutes": 30,
+"max_minutes": 44
+},
+"99204": {
+"visit_type": "new",
+"mdm_level": "moderate",
+"min_minutes": 45,
+"max_minutes": 59
+},
+"99205": {
+"visit_type": "new",
+"mdm_level": "high",
+"min_minutes": 60,
+"max_minutes": 74
+},
+"99212": {
+"visit_type": "established",
+"mdm_level": "straightforward",
+"min_minutes": 10,
+"max_minutes": 19
+},
+"99213": {
+"visit_type": "established",
+"mdm_level": "low",
+"min_minutes": 20,
+"max_minutes": 29
+},
+"99214": {
+"visit_type": "established",
+"mdm_level": "moderate",
+"min_minutes": 30,
+"max_minutes": 39
+},
+"99215": {
+"visit_type": "established",
+"mdm_level": "high",
+"min_minutes": 40,
+"max_minutes": 54
+}
+},
+
+"mdm_levels": {
+"straightforward": {
+"problems": [
+"1 self-limited or minor problem"
+],
+"data": {
+"level": "minimal_or_none"
+},
+"risk": "minimal"
+},
+
+"low": {
+  "problems": [
+    "2 or more self-limited or minor problems",
+    "1 stable chronic illness",
+    "1 acute uncomplicated illness or injury"
+  ],
+  "data": {
+    "level": "limited"
+  },
+  "risk": "low"
+},
+
+"moderate": {
+  "problems": [
+    "1 or more chronic illnesses with exacerbation, progression, or side effects of treatment",
+    "2 or more stable chronic illnesses",
+    "1 undiagnosed new problem with uncertain prognosis",
+    "1 acute illness with systemic symptoms",
+    "1 acute complicated injury"
+  ],
+  "data": {
+    "level": "moderate"
+  },
+  "risk": "moderate"
+},
+
+"high": {
+  "problems": [
+    "1 or more chronic illnesses with severe exacerbation, progression, or side effects of treatment",
+    "1 acute or chronic illness or injury that poses a threat to life or bodily function"
+  ],
+  "data": {
+    "level": "extensive"
+  },
+  "risk": "high"
+}
+
+},
+
+"risk_levels": {
+  "minimal": {
+    "description": "Minimal risk of morbidity from additional diagnostic testing or treatment",
+    "source_section": "Risk of Complications and/or Morbidity or Mortality of Patient Management",
+    "source_page": 11
+  },
+
+  "low": {
+    "description": "Low risk of morbidity from additional diagnostic testing or treatment",
+    "source_section": "Risk of Complications and/or Morbidity or Mortality of Patient Management",
+    "source_page": 11
+  },
+
+  "moderate": {
+    "description": "Moderate risk of morbidity from additional diagnostic testing or treatment",
+    "examples": [
+      "Prescription drug management",
+      "Decision regarding minor surgery with identified patient or procedure risk factors",
+      "Decision regarding elective major surgery without identified patient or procedure risk factors",
+      "Diagnosis or treatment significantly limited by social determinants of health"
+    ],
+    "source_section": "Risk of Complications and/or Morbidity or Mortality of Patient Management",
+    "source_page": 13
+  },
+
+  "high": {
+    "description": "High risk of morbidity from additional diagnostic testing or treatment",
+    "examples": [
+      "Drug therapy requiring intensive monitoring for toxicity",
+      "Decision regarding elective major surgery with identified patient or procedure risk factors",
+      "Decision regarding emergency major surgery",
+      "Decision regarding hospitalization",
+      "Decision not to resuscitate or to de-escalate care because of poor prognosis"
+    ],
+    "source_section": "Risk of Complications and/or Morbidity or Mortality of Patient Management",
+    "source_page": 14
+  }
+},
+
+"problem_definitions": {
+"source_section": "Definitions for the elements of MDM",
+"source_page": 5,
+"stable_chronic_illness": {
+"exact_definition": "A problem with an expected duration of at least one year or until the death of the patient.",
+"examples": [
+"well-controlled hypertension",
+"noninsulin-dependent diabetes",
+"cataract",
+"benign prostatic hyperplasia"
+]
+},
+
+"self_limited_or_minor_problem": {
+  "exact_definition": "A problem that runs a definite and prescribed course, is transient in nature, and is not likely to permanently alter health status."
+},
+
+"acute_uncomplicated_illness_or_injury": {
+  "exact_definition": "A recent or new short-term problem with low risk of morbidity.",
+  "examples": [
+    "cystitis",
+    "allergic rhinitis",
+    "simple sprain"
+  ]
+},
+
+"chronic_illness_with_exacerbation_progression_or_side_effects": {
+  "exact_definition": "A chronic illness that is acutely worsening, poorly controlled, or progressing."
+},
+
+"acute_illness_with_systemic_symptoms": {
+  "examples": [
+    "pyelonephritis",
+    "pneumonitis",
+    "colitis"
+  ]
+}
+
+},
+
+"data_elements": {
+"source_section": "Amount and/or Complexity of Data to be Reviewed and Analyzed",
+"source_page": 9,
+"category_1": {
+  "description": "Tests, documents, orders, or independent historian(s)",
+  "counting_rule": "Each unique test, order, or document counts as one element. Different data elements may be combined.",
+  "examples": [
+    "Review of prior external note",
+    "Review of unique test result",
+    "Ordering of unique test",
+    "Independent historian"
+  ]
+},
+
+"category_2": {
+  "description": "Independent interpretation of tests"
+},
+
+"category_3": {
+  "description": "Discussion with external physician or qualified healthcare professional"
+},
+
+"combination_of_data_elements": {
+  "exact_definition": "A combination of different data elements, for example, a combination of notes reviewed, tests ordered, tests reviewed, or independent historian, allows these elements to be summed. It does not require each item type or category to be represented.",
+  "source_section": "Definitions for the elements of MDM",
+  "source_page": 6
+},
+
+"analyzed_definition": {
+  "exact_definition": "The process of using data as part of diagnosis, evaluation, or treatment."
+}
+
+},
+
+"time_definition": {
+"source_section": "Guidelines Common to All E/M Services - Time",
+"source_page": 2,
+"time_selection_allowed": true,
+
+"included_activities": [
+  "Preparing to see the patient",
+  "Obtaining and reviewing history",
+  "Performing examination and evaluation",
+  "Counseling and educating patient or caregiver",
+  "Ordering medications tests or procedures",
+  "Communicating with other healthcare professionals",
+  "Documenting clinical information",
+  "Interpreting results",
+  "Care coordination"
+],
+
+"excluded_activities": [
+  "Separately reported services",
+  "Travel",
+  "General teaching activities"
+]
+
+},
+
+"time_validation": {
+"documentation_required": true,
+"future_jawda_dependency": true,
+"note": "JAWDA validation layer will require documented start and end times for time-based code verification."
+},
+
+"source_references": {
+  "document": "AMA 2021 E/M Office or Other Outpatient Code Changes",
+  "official_title": "CPT Evaluation and Management (E/M) Office or Other Outpatient (99202-99215) and Prolonged Services Code and Guideline Changes",
+  "effective_date": "2021-01-01",
+  "authority": "AMA_2021",
+  "authority_rank": 2,
+  "supersedes": "CMS 1997 for codes 99202-99215",
+  "key_sections": [
+    "Guidelines Common to All E/M Services",
+    "Guidelines for Office or Other Outpatient E/M Services",
+    "Medical Decision Making",
+    "Table 2 Levels of Medical Decision Making",
+    "Definitions for the elements of MDM"
+  ]
+}
+}
+
