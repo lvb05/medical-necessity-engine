@@ -7,47 +7,491 @@
 
 ---
 
-## Table of Contents
+## Project Overview
 
-1. [Project Overview](#project-overview)
-2. [Architecture](#architecture)
-3. [Features](#features)
-4. [Authorities & Compliance](#authorities--compliance)
-5. [API Endpoints](#api-endpoints)
-6. [Sample Requests & Responses](#sample-requests--responses)
-7. [Local Setup](#local-setup)
-8. [Docker Setup](#docker-setup)
-9. [Deployment](#deployment)
-10. [Test Results](#test-results)
-11. [Document Processing Approach](#document-processing-approach)
-12. [AMA 2021 vs CMS 1997 Supersession](#ama-2021-vs-cms-1997-supersession)
-13. [Future Improvements](#future-improvements)
+> The Medical Necessity Assistant answers clinical coding questions using the provided guideline documents as the source of truth.
+
+It supports questions like:
+
+- Does this visit qualify for a 99214?
+- Is hypertension a stable chronic illness under AMA 2021?
+- What happens if the LAMA form is missing in a JAWDA audit?
+- What documentation gaps could cause a denial?
+
+The system is designed to answer with exact guideline citations and avoid unsupported claims.
 
 ---
 
-## Project Overview
-
-The **Medical Necessity Assistant** answers critical clinical coding questions for healthcare providers:
-
-- *"Does this visit qualify for a 99214?"* → Powered by AMA 2021 E/M guidelines
-- *"My claim was denied for lack of medical necessity — what's missing?"* → Gap detection engine
-- *"What score will we get in JAWDA audit if the LAMA form is missing?"* → Audit compliance checker
-- *"Is hypertension a stable chronic illness under AMA 2021?"* → Evidence-based definitions
-
-### Key Differentiators
+## Key Differentiators
 
 | Feature | How It Works |
 |---------|-------------|
-| **No Hallucination** | Every answer cites exact source + page number |
-| **Multi-Authority Routing** | Questions routed to HAAD → JAWDA → AMA → CMS intelligently |
-| **Encounter Analysis** | Analyzes actual visit documentation against MDM table |
-| **Denial Risk Prediction** | Quantifies risk: `low` \| `moderate` \| `high` |
-| **JAWDA Compliance** | Validates LAMA forms, physician matches, start/end times |
+| **Source-Cited Answers** | Responses include authority, section, and page references from guideline rules |
+| **Multi-Authority Routing** | Questions are routed to AMA 2021, CMS 1997, HAAD, or JAWDA based on context |
+| **Encounter Analysis** | Evaluates documentation, MDM level, audit findings, and CPT support |
+| **Denial Risk Assessment** | Assigns low, moderate, or high denial risk using rule-based checks |
+| **JAWDA Compliance Checks** | Validates LAMA forms, physician consistency, and time-based billing requirements |
 
 ---
 
 ## Architecture
 
-### System Components
+### System Architecture
+```
+         ┌─────────────────────────────┐
+         │         FastAPI API         │
+         └──────────────┬──────────────┘
+                        │
+              ┌─────────┴─────────┐
+              │                   │
+              ▼                   ▼
+         ┌─────────────┐   ┌─────────────┐
+         │  /api/ask   │   │ /api/analyze│
+         └──────┬──────┘   └──────┬──────┘
+                │                 │
+                ▼                 ▼
+         ┌─────────────┐   ┌─────────────┐
+         │ Ask Engine  │   │Gap Detector │
+         └──────┬──────┘   └──────┬──────┘
+                │                 │
+                ▼                 ▼
+         ┌─────────────┐   ┌─────────────┐
+         │  Authority  │   │  MDM Engine │
+         │   Router    │   │ Audit Checks│
+         └──────┬──────┘   │ Time Rules  │
+                │          └──────┬──────┘
+                ▼                 ▼
+           ┌─────────────────────────────┐
+           │ Clinical Guideline Rules    │
+           │ AMA • CMS • HAAD • JAWDA    │
+           └─────────────────────────────┘
+```
 
-┌─────────────────────────────────────────────────────────────────┐ │ FastAPI Web Application │ │ ┌─────────────────────────────────────────────────────────┐ │ │ │ API Layer (routes/) │ │ │ │ ├─ POST /api/ask → Answer guideline questions │ │ │ │ └─ POST /api/analyze → Analyze patient encounters │ │ │ └─────────────────────────────────────────────────────────┘ │ │ ↓ │ │ ┌─────────────────────────────────────────────────────────┐ │ │ │ Business Logic (engines/) │ │ │ │ ├─ ask_engine.py → Question answering + routing │ │ │ │ ├─ gap_detector.py → Documentation gap analysis │ │ │ │ ├─ mdm.py → MDM calculation (2-of-3 rule) │ │ │ │ ├─ audit_checker.py → JAWDA compliance checks │ │ │ │ ├─ time_validator.py → Time-based code validation │ │ │ │ └─ documentation_checker.py → History level eval │ │ │ └─────────────────────────────────────────────────────────┘ │ │ ↓ │ │ ┌─────────────────────────────────────────────────────────┐ │ │ │ Retrieval Layer (retrieval/) │ │ │ │ ├─ authority_router.py → Route to correct authority │ │ │ │ └─ rule_loader.py → Load and validate rules │ │ │ └─────────────────────────────────────────────────────────┘ │ │ ↓ │ │ ┌─────────────────────────────────────────────────────────┐ │ │ │ Data Layer │ │ │ │ ├─ PostgreSQL Database (async via SQLAlchemy) │ │ │ │ │ ├─ QueryLog (audit trail) │ │ │ │ │ ├─ GuidelineDocument (metadata) │ │ │ │ │ └─ GuidelineChunk (searchable content) │ │ │ │ └─ JSON Rules Files (rules/ directory) │ │ │ │ ├─ ama_2021.json │ │ │ │ ├─ cms_1997.json │ │ │ │ ├─ haad_process.json │ │ │ │ ├─ jawda_part_ix.json │ │ │ │ └─ clinical_coding_process.json │ │ │ └─────────────────────────────────────────────────────────┘ │ └─────────────────────────────────────────────────────────────────┘
+## Tech Stack
+
+#### Backend
+
+* **Python 3.11** — Core application language
+* **FastAPI** — REST API framework
+* **Pydantic** — Request and response validation
+* **Uvicorn** — ASGI application server
+
+#### Data Storage
+
+* **PostgreSQL** — Persistent storage for guideline content and query logs
+* **SQLAlchemy (Async)** — ORM and database access
+
+#### Rule Engine
+
+* **Rule-Based Retrieval** — Authority-specific guideline retrieval
+* **AMA 2021 MDM Engine** — Medical Decision Making calculation using the 2-of-3 rule
+* **Documentation Analysis Engine** — CMS 1997 documentation validation
+* **JAWDA Audit Engine** — UAE audit compliance checks
+* **Time validator** — Time-based code validation
+
+#### Testing & Deployment
+
+* **pytest** — Unit and integration testing
+* **Docker** — Containerized application packaging
+* **Render** — Production hosting
+
+
+
+### Encounter Analysis Flow (internal logic of `/api/analyze`)
+```
+                 Patient Encounter
+                         │
+                         ▼
+                Extract Documentation
+            (HPI, Exam, Assessment)
+                         │
+                         ▼
+                  MDM Inference Engine
+             ┌───────────┼───────────┐
+             ▼           ▼           ▼
+      Problems      Data Level    Risk Level
+      Complexity                 Complexity
+             └───────────┼───────────┘
+                         ▼
+                  AMA 2021 MDM
+                   2-of-3 Rule
+                         │
+                         ▼
+               Recommended CPT Code
+                         │
+          ┌──────────────┼──────────────┐
+          ▼              ▼              ▼
+     Audit Check    Time Validation   Gap Detection
+       (JAWDA)          (AMA)            (CMS)
+          └──────────────┼──────────────┘
+                         ▼
+                    Denial Risk
+               (Low / Moderate / High)
+                         ▼
+               Structured JSON Output
+```
+
+### Question Answering Flow (internal logic of `/api/ask`)
+```
+                      User Question
+                           │
+                           ▼
+                   Authority Router
+              (AMA / CMS / HAAD / JAWDA)
+                           │
+                           ▼
+                Extract Keywords & CPT
+                           │
+                           ▼
+                 Retrieve Relevant Rule
+                    From JSON Rules
+                           │
+                           ▼
+                   Ask Engine Logic
+                           │
+                           ▼
+                 Build Structured Answer
+                           │
+                           ▼
+                    Add Citation
+               (Authority + Section + Page)
+                           │
+                           ▼
+                     JSON Response
+```
+---
+
+
+## Features
+
+| Feature | Description |
+|---------|-------------|
+| **Question Answering** | Answers clinical coding questions with citations |
+| **Multi-Authority Support** | Routes to AMA 2021, CMS 1997, HAAD, or JAWDA |
+| **Encounter Analysis** | Evaluates MDM, documentation gaps, and CPT support |
+| **Denial Risk Assessment** | Returns low, moderate, or high risk |
+| **Source Citations** | Includes authority, section, and page |
+| **JAWDA Checks** | Validates LAMA, physician match, and time documentation |
+
+---
+
+## Authorities & Compliance
+
+#### AMA 2021
+
+Used for office and outpatient E/M code selection (99202–99215).
+
+* Medical Decision Making (MDM)
+* 2-of-3 rule
+* Problem, data, and risk complexity
+* Time-based code selection
+
+#### CMS 1997
+
+Used for documentation framework requirements.
+
+* HPI
+* ROS
+* PFSH
+* Examination documentation
+
+#### HAAD
+
+Used for UAE-specific coding and documentation guidance.
+
+* Coding processes
+* Documentation standards
+* Medical necessity guidance
+
+#### JAWDA 2026
+
+Used for audit compliance and scoring requirements.
+
+* LAMA validation
+* Physician verification
+* Time documentation checks
+* Audit findings
+
+#### Supersession Rule
+
+For office and outpatient E/M codes **99202–99215**, AMA 2021 supersedes CMS 1997 and is used as the primary authority.
+
+---
+
+## API Endpoints
+
+#### GET `/health`
+
+Returns service status.
+
+**Response**
+
+```json
+{
+  "status": "ok"
+}
+```
+
+#### POST `/api/ask`
+
+Answers a clinical coding question using the appropriate guideline authority.
+
+**Request**
+
+```json
+{
+  "question": "Does this visit qualify for a 99214?"
+}
+```
+
+**Response Fields**
+
+* answer
+* authority
+* source_section
+* source_page
+* confidence
+* citation
+
+#### POST `/api/analyze`
+
+Analyzes a patient encounter for CPT support, documentation gaps, audit findings, and denial risk.
+
+**Key Response Fields**
+
+* recommended_code
+* code_supported
+* documentation_gaps
+* audit_findings
+* denial_risk
+* citations
+
+---
+
+## Sample Requests
+
+#### Clinical Question
+
+```bash
+curl -X POST https://medical-necessity-engine.onrender.com/api/ask \
+-H "Content-Type: application/json" \
+-d '{"question":"Does this visit qualify for a 99214?"}'
+```
+
+**Example Response**
+
+```json
+{
+  "authority": "AMA_2021",
+  "source_section": "Levels of Medical Decision Making",
+  "source_page": 10,
+  "confidence": "high"
+}
+```
+
+#### Encounter Analysis
+
+```bash
+curl -X POST https://medical-necessity-engine.onrender.com/api/analyze \
+-H "Content-Type: application/json" \
+-d '{ ... }'
+```
+
+**Example Response**
+
+```json
+{
+  "recommended_code": "99214",
+  "code_supported": true,
+  "denial_risk": "low"
+}
+```
+
+---
+
+## Local Setup
+
+### Prerequisites
+
+* Python 3.11+
+* PostgreSQL
+* pip
+
+### Installation
+
+```bash
+git clone https://github.com/lvb05/medical-necessity-engine.git
+cd medical-necessity-engine
+
+python -m venv venv
+
+# Windows
+venv\Scripts\activate
+
+# macOS/Linux
+source venv/bin/activate
+
+pip install -r requirements.txt
+```
+
+Create `.env`
+
+```env
+DATABASE_URL=postgresql+asyncpg://USERNAME:PASSWORD@localhost:5432/medical_necessity
+ENV=development
+LOG_LEVEL=INFO
+```
+
+Run the application:
+
+```bash
+python -c "from app.database import init_db; import asyncio; asyncio.run(init_db())"
+uvicorn app.main:app --reload
+```
+
+Available at:
+
+* http://localhost:8000
+* http://localhost:8000/docs
+
+---
+
+## Docker
+
+```bash
+docker build -t medical-necessity-engine .
+docker run -p 8000:8000 medical-necessity-engine
+```
+
+---
+
+## Deployment
+
+**Live URL**
+
+https://medical-necessity-engine.onrender.com/
+
+---
+
+## Testing
+
+Current Status:
+
+```text
+21 tests passed
+0 failures
+```
+
+Coverage includes:
+
+* MDM calculation
+* Authority routing
+* Rule loading
+* Audit validation
+* Time validation
+* Documentation analysis
+* API integration
+
+Run tests:
+
+```bash
+pytest -v
+```
+
+---
+
+## Document Processing Approach
+
+> The provided guideline documents were converted into structured JSON rule files and stored as searchable records.
+
+#### Storage Model
+
+* GuidelineDocument → document metadata
+* GuidelineChunk → section-level rule content
+* QueryLog → request history and audit trail
+
+#### Retrieval Flow
+
+1. Route question to the appropriate authority.
+2. Retrieve matching guideline sections.
+3. Rank results using keyword matching and section priority.
+4. Return the highest-ranked result with citation.
+
+This approach keeps retrieval deterministic and supports exact source attribution.
+
+---
+
+## AMA 2021 vs CMS 1997
+
+The system enforces the assignment requirement that AMA 2021 supersedes CMS 1997 for office and outpatient E/M codes 99202–99215.
+
+Examples:
+
+* CPT and MDM questions → AMA 2021
+* Documentation questions → CMS 1997
+* Audit questions → JAWDA
+* UAE coding process questions → HAAD
+
+---
+
+## Project Structure
+
+```text
+medical-necessity-engine/
+├── app/
+│   ├── api/
+│   │   └── routes/
+│   │       ├── ask.py
+│   │       └── analyze.py
+│   ├── engines/
+│   │   ├── ask_engine.py
+│   │   ├── gap_detector.py
+│   │   ├── mdm.py
+│   │   ├── audit_checker.py
+│   │   ├── documentation_checker.py
+│   │   └── time_validator.py
+│   ├── retrieval/
+│   │   ├── authority_router.py
+│   │   └── rule_loader.py
+│   ├── config.py
+│   ├── database.py
+│   ├── database_seed.py
+│   ├── models.py
+│   ├── schemas.py
+│   └── main.py
+│
+├── rules/
+│   ├── ama_2021.json
+│   ├── cms_1997.json
+│   ├── haad_process.json
+│   ├── jawda_part_ix.json
+│   └── clinical_coding_process.json
+│
+├── tests/
+│   ├── test_api_integration.py
+│   ├── test_authority_router.py
+│   ├── test_mdm.py
+│   ├── test_audit_checker.py
+│   ├── test_documentation_checker.py
+│   ├── test_rule_loader.py
+│   └── test_time_validator.py
+│
+├── docs/
+│   └── EXTRACTION_LOG.md
+│
+├── docker-compose.yml
+├── Dockerfile
+├── requirements.txt
+├── .env.example
+└── README.md
+```
+
+---
+
+## Future Improvements
+
+* Expand JAWDA audit coverage
+* Improve retrieval with semantic search
+* Add frontend dashboard
+* Support batch encounter analysis
+* Increase edge-case test coverage
