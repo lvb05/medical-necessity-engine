@@ -35,8 +35,8 @@ async def analyze_encounter_api(
     citations = [
         Citation(
             authority=item["authority"],
-            source_section=item["source_section"],
-            source_page=item["source_page"],
+            section=item["source_section"],
+            page=item["source_page"],
         )
         for item in analysis["citations"]
     ]

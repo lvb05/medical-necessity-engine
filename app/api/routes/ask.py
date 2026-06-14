@@ -6,7 +6,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.schemas import (
     AskRequest,
     AskResponse,
-    Citation,
 )
 from app.database import get_db
 from app.models import QueryLog
@@ -44,20 +43,4 @@ async def ask_question(
         await db.commit()
     except Exception:
         await db.rollback()
-    return AskResponse(
-        answer=result["answer"],
-        authority=result["authority"],
-        source_section=result["source_section"],
-        source_page=result["source_page"],
-        confidence=result["confidence"],
-        citations=[
-            Citation(
-                authority=result["authority"],
-                source_section=result["source_section"],
-                source_page=result["source_page"],
-                rule_text=result["rule_text"],
-            )
-        ]
-        if result["rule_text"]
-        else [],
-    )
+    return AskResponse(**result)

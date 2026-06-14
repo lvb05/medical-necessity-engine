@@ -6,9 +6,8 @@ class AskRequest(BaseModel):
 
 class Citation(BaseModel):
     authority: str
-    source_section: str
-    source_page: int | str
-    rule_text: str | None = None
+    section: str
+    page: int | str
 
 class SimpleCitation(BaseModel):
     authority: str
@@ -25,7 +24,7 @@ class AskResponse(BaseModel):
     source_page: int | str
     confidence: str
     rule_text: str | None = None
-    citation: SimpleCitation | None = None
+    citation: Citation | None = None
 
 class DocumentationInput(BaseModel):
     HPI: str | None = None
