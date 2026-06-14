@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-
+import logging
+logger = logging.getLogger(__name__)
 from app.api.routes.ask import router as ask_router
 from app.api.routes.analyze import router as analyze_router
 from app.retrieval.rule_loader import (
@@ -24,14 +25,14 @@ async def lifespan(app: FastAPI):
     async with AsyncSessionLocal() as db:
         await seed_guidelines_if_empty(db)
 
-    print(
-        "Loaded authorities:",
+    logger.info(
+        "Loaded authorities: %s",
         ", ".join(get_loaded_authorities())
     )
 
-    print("Starting Medical Necessity Engine...")
+    logger.info("Medical Necessity Engine started.")
     yield
-    print("Stopping Medical Necessity Engine...")
+    logger.info("Medical Necessity Engine stopped.")
 
 app = FastAPI(
     title="Medical Necessity Engine",

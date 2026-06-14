@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import (
     Text,
     DateTime,
@@ -46,8 +46,8 @@ class QueryLog(Base):
         nullable=True,
     )
     created_at: Mapped[datetime] = mapped_column(
-        DateTime,
-        default=datetime.utcnow,
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
     )
 
 class GuidelineDocument(Base):
@@ -69,8 +69,8 @@ class GuidelineDocument(Base):
         nullable=True,
     )
     loaded_at: Mapped[datetime] = mapped_column(
-        DateTime,
-        default=datetime.utcnow,
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
     )
 
 class GuidelineChunk(Base):
@@ -99,6 +99,6 @@ class GuidelineChunk(Base):
         JSON,
     )
     created_at: Mapped[datetime] = mapped_column(
-        DateTime,
-        default=datetime.utcnow,
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
     )

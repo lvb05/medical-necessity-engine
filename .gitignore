@@ -1,9 +1,12 @@
 __pycache__/
 *.pyc
+*.pyo
 
 .env
 
 .pytest_cache/
+.coverage
+htmlcov/
 
 .venv/
 venv/
@@ -12,3 +15,9 @@ venv/
 .vscode/
 
 *.db
+
+dist/
+build/
+*.egg-info/
+
+.mypy_cache/

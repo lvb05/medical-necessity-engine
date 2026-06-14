@@ -7,6 +7,7 @@ from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.models import QueryLog
+
 router = APIRouter(prefix="/api", tags=["Analyze"])
 
 
@@ -47,17 +48,17 @@ async def analyze_encounter_api(
     else:
         route_chain = list(route.authority_chain)
 
-    documentation_gaps = []
-    for gap in analysis["documentation_gaps"]:
-        documentation_gaps.append(
-            DocumentationGap(
-                gap=gap["gap"],
-                authority=gap["authority"],
-                source_section=gap["source_section"],
-                source_page=gap["source_page"],
-            )
+    documentation_gaps = [
+        DocumentationGap(
+            gap=gap["gap"],
+            authority=gap["authority"],
+            source_section=gap["source_section"],
+            source_page=gap["source_page"],
         )
-    
+        for gap in analysis["documentation_gaps"]
+    ]
+
+    mdm_debug = analysis.get("_mdm_debug", {})
     db.add(
         QueryLog(
             endpoint="/api/analyze",
@@ -65,7 +66,11 @@ async def analyze_encounter_api(
             authority_used=" -> ".join(route_chain),
             answer=(
                 f"Supported={analysis['code_supported']}, "
-                f"Recommended={analysis['recommended_code']}"
+                f"Recommended={analysis['recommended_code']}, "
+                f"MDM={mdm_debug.get('mdm_level', 'unknown')} "
+                f"(problems={mdm_debug.get('problems_level')}, "
+                f"data={mdm_debug.get('data_level')}, "
+                f"risk={mdm_debug.get('risk_level')})"
             ),
             denial_risk=analysis["denial_risk"],
         )

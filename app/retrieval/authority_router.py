@@ -64,19 +64,15 @@ _HAAD_KEYWORDS: Final[tuple[str, ...]] = (
     "conflicting documentation",
     "training",
     "ethics",
-    "claims submission",
     "facility policy",
     "coding practice",
     "outpatient visit coding",
     "narrative diagnosis",
     "copy-paste",
     "copy paste",
-    "claims accuracy",
     "claim denied",
     "claim denial",
     "coding policy",
-    "coding quality",
-    "charge entry",
     "pre certification",
     "medical necessity denial"
 )
@@ -128,7 +124,13 @@ _AMA_KEYWORDS: Final[tuple[str, ...]] = (
     "total time",
     "encounter time",
     "em level",
-    "e/m level"
+    "e/m level",
+    "qualify for 99214",
+    "qualify for 99215",
+    "99214 support",
+    "99215 support",
+    "does this visit qualify",
+    "does this encounter qualify"
 )
 
 _CMS_KEYWORDS: Final[tuple[str, ...]] = (
@@ -138,8 +140,6 @@ _CMS_KEYWORDS: Final[tuple[str, ...]] = (
     "review of systems",
     "pfsh",
     "past family social",
-    "physical examination",
-    "physical exam",
     "bullet elements",
     "documentation framework",
     "comprehensive history",
@@ -149,7 +149,6 @@ _CMS_KEYWORDS: Final[tuple[str, ...]] = (
     "documentation requirements",
     "past family social history",
     "comprehensive exam",
-    "detailed history",
     "history of present illness",
     "past history",
     "family history",

@@ -10,13 +10,22 @@ class Citation(BaseModel):
     source_page: int | str
     rule_text: str | None = None
 
+class SimpleCitation(BaseModel):
+    authority: str
+    section: str
+    page: int | str
+
 class AskResponse(BaseModel):
     answer: str
     authority: str
+    authority_chain: list[str] = []
+    matched_terms: list[str] = []
+    reasoning: str | None = None
     source_section: str
     source_page: int | str
     confidence: str
-    citations: list[Citation] = []
+    rule_text: str | None = None
+    citation: SimpleCitation | None = None
 
 class DocumentationInput(BaseModel):
     HPI: str | None = None

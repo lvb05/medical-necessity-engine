@@ -7,7 +7,11 @@ from app.models import (
     GuidelineChunk,
 )
 
-RULES_DIR = Path("rules")
+RULES_DIR = (
+    Path(__file__).resolve().parent.parent
+    / "rules"
+)
+
 async def seed_guidelines_if_empty(
     db: AsyncSession,
 ):
@@ -24,12 +28,6 @@ async def seed_guidelines_if_empty(
         ) as f:
             data = json.load(f)
 
-        print(
-            "Seeding:",
-            file_path.name,
-            list(data.keys())
-        )
-        
         document = GuidelineDocument(
             authority=data["authority"],
             document_name=data.get(

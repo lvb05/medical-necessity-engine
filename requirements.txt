@@ -11,5 +11,3 @@ python-dotenv
 
 pytest
 httpx
-
-psycopg2-binary
