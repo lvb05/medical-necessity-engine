@@ -174,6 +174,17 @@ The system is designed to answer with exact guideline citations and avoid unsupp
 | **JAWDA Checks** | Validates LAMA, physician match, and time documentation |
 
 ---
+## Answer Quality Guarantees
+
+| Rule | How It's Enforced |
+|------|-------------------|
+| Answer only what was asked | Retrieval is scoped to the question's authority and keywords |
+| Always cite the source | Every response includes authority, section, and page |
+| Tight, precise retrieval | Keyword matching with section priority ranking |
+| Max 4 sentences per answer | Enforced in the Ask Engine response builder |
+| AMA 2021 supersedes CMS 1997 | Authority router enforces this for codes 99202–99215 |
+| Never invent rules | Returns a clear "not found" if no matching guideline exists |
+---
 
 ## Authorities & Compliance
 
@@ -285,7 +296,8 @@ curl -X POST https://medical-necessity-engine.onrender.com/api/ask \
   "authority": "AMA_2021",
   "source_section": "Levels of Medical Decision Making",
   "source_page": 10,
-  "confidence": "high"
+  "confidence": "high",
+  "citation": "AMA 2021, Levels of Medical Decision Making, p.10"
 }
 ```
 
@@ -418,19 +430,6 @@ pytest -v
 4. Return the highest-ranked result with citation.
 
 This approach keeps retrieval deterministic and supports exact source attribution.
-
----
-
-## AMA 2021 vs CMS 1997
-
-The system enforces the assignment requirement that AMA 2021 supersedes CMS 1997 for office and outpatient E/M codes 99202–99215.
-
-Examples:
-
-* CPT and MDM questions → AMA 2021
-* Documentation questions → CMS 1997
-* Audit questions → JAWDA
-* UAE coding process questions → HAAD
 
 ---
 
