@@ -212,21 +212,7 @@ def route_authority(question: str, code: str | None = None) -> RouteDecision:
             matched_terms=jawda_hits,
         )
 
-    if ama_code_match or ama_hits:
-        chain = [AUTHORITY_AMA, AUTHORITY_CMS]
-        return RouteDecision(
-            primary_authority=AUTHORITY_AMA,
-            fallback_authority=AUTHORITY_CMS,
-            context="em_code_selection",
-            reason=(
-                "Query matches AMA 2021 E/M selection terms "
-                f"(code={detected_code or 'none'}, terms={', '.join(ama_hits)})."
-            ),
-            authority_chain=tuple(chain),
-            matched_terms=ama_hits,
-        )
-    
-    if haad_hits:
+    elif haad_hits:
         chain = [AUTHORITY_HAAD]
         if ama_code_match or ama_hits:
             chain.append(AUTHORITY_AMA)
@@ -244,7 +230,21 @@ def route_authority(question: str, code: str | None = None) -> RouteDecision:
             matched_terms=haad_hits,
         )
 
-    if cms_hits:
+    elif ama_code_match or ama_hits:
+        chain = [AUTHORITY_AMA, AUTHORITY_CMS]
+        return RouteDecision(
+            primary_authority=AUTHORITY_AMA,
+            fallback_authority=AUTHORITY_CMS,
+            context="em_code_selection",
+            reason=(
+                "Query matches AMA 2021 E/M selection terms "
+                f"(code={detected_code or 'none'}, terms={', '.join(ama_hits)})."
+            ),
+            authority_chain=tuple(chain),
+            matched_terms=ama_hits,
+        )
+
+    elif cms_hits:
         return RouteDecision(
             primary_authority=AUTHORITY_CMS,
             fallback_authority=None,

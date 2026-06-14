@@ -1,21 +1,9 @@
-"""
-gap_detector.py
----------------
-Analyzes an encounter dict and returns MDM scoring, documentation gaps,
-audit findings, and denial risk.
-
-All MDM levels are inferred from actual encounter data using AMA 2021 Table 2
-(page 10) rules. Nothing is hardcoded.
-"""
 from app.engines.audit_checker import run_audit_checks
 from app.engines.documentation_checker import evaluate_history_level
 from app.engines.mdm import calculate_mdm
 from app.engines.time_validator import validate_time
 
 
-# ---------------------------------------------------------------------------
-# AMA 2021 problem-level keyword sets  (Table 2, page 10)
-# ---------------------------------------------------------------------------
 _HIGH_PROBLEM_KW = frozenset({
     "severe exacerbation", "severe progression", "threat to life",
     "threat to bodily function", "life-threatening", "critical",
@@ -33,7 +21,6 @@ _LOW_PROBLEM_KW = frozenset({
     "benign", "cataract", "bph",
 })
 
-# AMA 2021 risk-level keywords  (Table 2, pages 13-14)
 _HIGH_RISK_KW = frozenset({
     "hospitalization", "hospital admission", "admit", "icu",
     "emergency surgery", "major surgery with identified",
@@ -44,7 +31,6 @@ _MODERATE_RISK_KW = frozenset({
     "prescribed", "prescription", "new medication", "medication change",
     "dose adjustment", "increased dose", "added medication", "started medication",
     "drug management", "prescription drug",
-    # common drug names that imply prescription management
     "metformin", "lisinopril", "amlodipine", "atorvastatin", "insulin",
     "losartan", "metoprolol", "omeprazole", "levothyroxine",
     "minor surgery with identified",
@@ -57,7 +43,6 @@ _LOW_RISK_KW = frozenset({
     "superficial needle biopsy",
 })
 
-# Map raw data levels → MDM level strings used by calculate_mdm
 _DATA_TO_MDM: dict[str, str] = {
     "none": "straightforward",
     "limited": "low",
@@ -65,16 +50,12 @@ _DATA_TO_MDM: dict[str, str] = {
     "extensive": "high",
 }
 
-# Map risk levels → MDM level strings used by calculate_mdm
-# 'minimal' is a valid AMA 2021 risk descriptor but calculate_mdm uses 'straightforward'
 _RISK_TO_MDM: dict[str, str] = {
     "minimal": "straightforward",
     "low": "low",
     "moderate": "moderate",
     "high": "high",
 }
-
-# CPT code → MDM level (for gap messages)
 _CODE_TO_MDM: dict[str, str] = {
     "99202": "straightforward", "99203": "low",
     "99204": "moderate",        "99205": "high",
@@ -82,54 +63,34 @@ _CODE_TO_MDM: dict[str, str] = {
     "99214": "moderate",        "99215": "high",
 }
 
-
-# ---------------------------------------------------------------------------
-# MDM inference helpers — all derived from encounter data, never hardcoded
-# ---------------------------------------------------------------------------
-
 def _infer_problems_level(diagnoses: list[str], documentation: dict) -> str:
-    """
-    AMA 2021 Table 2, page 10.
-    Examine diagnoses list + assessment + HPI text to infer problem complexity.
-    Returns: 'straightforward' | 'low' | 'moderate' | 'high'
-    """
     assessment = (documentation.get("assessment") or "").lower()
     hpi = (documentation.get("HPI") or documentation.get("hpi") or "").lower()
     all_text = assessment + " " + hpi + " " + " ".join(d.lower() for d in diagnoses)
 
-    # High: threat to life/function, severe exacerbation (AMA 2021 page 10)
     if any(kw in all_text for kw in _HIGH_PROBLEM_KW):
         return "high"
 
-    # Moderate: exacerbation/progression, undiagnosed, acute with systemic sx
     if any(kw in all_text for kw in _MODERATE_PROBLEM_KW):
         return "moderate"
 
-    # Low: 2+ self-limited/minor OR 1 stable chronic OR 1 acute uncomplicated
     if len(diagnoses) >= 2:
         return "low"
     if any(kw in all_text for kw in _LOW_PROBLEM_KW):
         return "low"
     if len(diagnoses) == 1:
-        # Single diagnosis with no exacerbation keywords → low
         return "low"
 
     return "straightforward"
 
 
 def _infer_data_level_raw(encounter: dict) -> str:
-    """
-    AMA 2021 Table 2, page 10 / Data section page 9.
-    Counts data elements across the three categories.
-    Returns raw label: 'none' | 'limited' | 'moderate' | 'extensive'
-    """
     score = 0
     documentation = encounter.get("documentation", {})
     hpi = (documentation.get("HPI") or documentation.get("hpi") or "").lower()
     assessment = (documentation.get("assessment") or "").lower()
     combined = hpi + " " + assessment
 
-    # Category 1 — tests ordered, results reviewed, external notes, historian
     procedures = encounter.get("procedures", [])
     score += len(procedures)  # each unique order/test = 1 element
 
@@ -139,14 +100,12 @@ def _infer_data_level_raw(encounter: dict) -> str:
     )):
         score += 1
 
-    # Category 2 — independent interpretation of test by this provider
     if any(kw in combined for kw in (
         "ecg", "ekg", "x-ray", "ct scan", "mri", "ultrasound",
         "echo", "interpreted", "read the",
     )):
         score += 1
 
-    # Category 3 — discussion with external provider / care coordination
     if any(kw in combined for kw in (
         "discussed with", "consulted", "spoke with dr", "referred to",
         "coordination with", "care coordination",
@@ -163,36 +122,22 @@ def _infer_data_level_raw(encounter: dict) -> str:
 
 
 def _infer_risk_level(encounter: dict) -> str:
-    """
-    AMA 2021 Table 2, pages 13-14.
-    Infers risk from documented management decisions.
-    Returns: 'minimal' | 'low' | 'moderate' | 'high'
-    """
     documentation = encounter.get("documentation", {})
     assessment = (documentation.get("assessment") or "").lower()
     hpi = (documentation.get("HPI") or documentation.get("hpi") or "").lower()
     procedures = [p.lower() for p in encounter.get("procedures", [])]
     combined = assessment + " " + hpi + " " + " ".join(procedures)
 
-    # High risk (AMA 2021 page 14)
     if any(kw in combined for kw in _HIGH_RISK_KW):
         return "high"
 
-    # Moderate risk (AMA 2021 page 13)
-    # Prescription drug management is the most common moderate-risk trigger
     if any(kw in combined for kw in _MODERATE_RISK_KW):
         return "moderate"
 
-    # Low risk
     if any(kw in combined for kw in _LOW_RISK_KW):
         return "low"
 
     return "minimal"
-
-
-# ---------------------------------------------------------------------------
-# MDM gap builder — called only when billed code doesn't match recommended
-# ---------------------------------------------------------------------------
 
 def _build_mdm_gaps(
     billed_code: str,
@@ -209,12 +154,11 @@ def _build_mdm_gaps(
     billed_mdm = _CODE_TO_MDM.get(billed_code, "unknown")
     gaps = []
 
-    # --- Problems element ---
     gaps.append({
         "gap": (
-            f"Problems element supports '{problems_level}' complexity "
+            f"Documentation supports '{problems_level}' problem complexity "
             f"(diagnoses: {', '.join(diagnoses) if diagnoses else 'none documented'}). "
-            f"'{billed_mdm}' MDM for {billed_code} requires '{billed_mdm}' problem complexity. "
+            f"Billed code {billed_code} requires '{billed_mdm}' MDM. "
             f"AMA 2021 Table 2 (page 10): 2 of 3 MDM elements must meet or exceed the billed level."
         ),
         "authority": "AMA_2021",
@@ -222,7 +166,6 @@ def _build_mdm_gaps(
         "source_page": 10,
     })
 
-    # --- Data element ---
     gaps.append({
         "gap": (
             f"Data element supports '{data_level_raw}' complexity "
@@ -235,7 +178,6 @@ def _build_mdm_gaps(
         "source_page": 9,
     })
 
-    # --- Risk element ---
     gaps.append({
         "gap": (
             f"Risk element: inferred '{risk_level}' risk from documented management. "
@@ -250,21 +192,17 @@ def _build_mdm_gaps(
 
     return gaps
 
-
-# ---------------------------------------------------------------------------
-# Main entry point
-# ---------------------------------------------------------------------------
-
 def analyze_encounter(encounter: dict) -> dict:
-    # -- Audit checks (JAWDA) ------------------------------------------------
     audit_findings = run_audit_checks(
         lama_required=encounter.get("lama_required", False),
         lama_signed=encounter.get("lama_signed", True),
         billed_physician=encounter.get("billed_physician", ""),
         actual_physician=encounter.get("actual_physician", ""),
+        billed_code=encounter.get("billed_code", ""),
+        start_time=encounter.get("start_time"),
+        end_time=encounter.get("end_time"),
     )
 
-    # -- History level (CMS 1997) --------------------------------------------
     history = evaluate_history_level(
         chief_complaint=encounter.get("chief_complaint"),
         hpi_count=encounter.get("hpi_count", 0),
@@ -272,7 +210,6 @@ def analyze_encounter(encounter: dict) -> dict:
         pfsh_count=encounter.get("pfsh_count", 0),
     )
 
-    # -- MDM inference (AMA 2021 Table 2, page 10) ---------------------------
     documentation = encounter.get("documentation", {})
     diagnoses = encounter.get("diagnoses", [])
     procedures = encounter.get("procedures", [])
@@ -360,7 +297,12 @@ def analyze_encounter(encounter: dict) -> dict:
 
     mdm_mismatch = billed_code and recommended_code != billed_code
 
-    if len(audit_findings) >= 2 or len(documentation_gaps) >= 4:
+    audit_points = sum(
+        finding.points_deducted
+        for finding in audit_findings
+    )
+
+    if audit_points >= 20 or len(documentation_gaps) >= 4:
         denial_risk = "high"
     elif (
         len(audit_findings) == 1
@@ -391,6 +333,12 @@ def analyze_encounter(encounter: dict) -> dict:
         "source_section": mdm.citation.source_section,
         "source_page": mdm.citation.source_page,
     }]
+    for finding in audit_findings:
+        citations.append({
+            "authority": finding.citation.authority,
+            "source_section": finding.citation.source_section,
+            "source_page": finding.citation.source_page,
+        })
 
     if time_result["citation"] and uses_time_coding:
         citations.append({

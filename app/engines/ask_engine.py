@@ -1,21 +1,7 @@
-"""
-ask_engine.py
--------------
-Answers clinical guideline questions by routing to the correct authority,
-scoring retrieved chunks, and building a structured, cited response.
-
-Answer quality rules enforced here:
-  Rule 1 — Answer only what was asked.
-  Rule 2 — Always cite exact source + location.
-  Rule 3 — Tight, precise retrieval.
-  Rule 4 — Max 4 sentences in any answer field.
-  Rule 6 — If context is missing or docs don't cover it, say so clearly.
-"""
 from __future__ import annotations
 
 import re
 from typing import Any
-
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -24,10 +10,6 @@ from app.retrieval.authority_router import route_authority
 
 _CPT_RE = re.compile(r"\b(99(?:202|203|204|205|212|213|214|215))\b")
 
-# ---------------------------------------------------------------------------
-# Section priority — base scores used by chunk_score()
-# Higher = retrieved first when all else is equal
-# ---------------------------------------------------------------------------
 _SECTION_PRIORITY: dict[str, int] = {
     # AMA 2021
     "mdm_2_of_3_rule": 55,
@@ -58,7 +40,6 @@ _SECTION_PRIORITY: dict[str, int] = {
     "scoring_weights": 30,
 }
 
-# Hint keys used by _intent_section_keys()
 _AMA_HINT_KEYS = (
     "99202", "99203", "99204", "99205",
     "99212", "99213", "99214", "99215",
@@ -81,7 +62,6 @@ _CMS_HINT_KEYS = (
     "past family social", "chief complaint", "documentation framework",
 )
 
-# Questions that imply encounter context is needed (Rule 6)
 _CONTEXT_REQUIRED_TRIGGERS = (
     "does this visit qualify",
     "does this encounter qualify",
@@ -96,6 +76,15 @@ _INLINE_CONTEXT_KW = (
     "patient", "bp ", "blood pressure", "exam ", "history of",
     "prescribed", "medication", "procedure",
 )
+
+def _limit_to_4_sentences(text: str) -> str:
+    if not text:
+        return ""
+    sentences = re.split(
+        r'(?<=[.!?])\s+',
+        text.strip()
+    )
+    return " ".join(sentences[:4])
 
 def _extract_cpt(text: str) -> str | None:
     match = _CPT_RE.search(text)
@@ -162,26 +151,14 @@ def _summary_from_content(content: Any) -> str:
 
 
 def _needs_encounter_context(question: str) -> bool:
-    """
-    Rule 6: detect questions that ask whether 'this visit' qualifies
-    but provide no encounter data inline AND no CPT code to look up.
-
-    If a CPT code is present the question is asking about qualification
-    criteria for that code — we can answer from the guidelines directly.
-    """
     q = question.lower()
     triggered = any(t in q for t in _CONTEXT_REQUIRED_TRIGGERS)
     has_inline_context = any(kw in q for kw in _INLINE_CONTEXT_KW)
     has_cpt_code = bool(_CPT_RE.search(q))
-    # If a specific CPT code is mentioned we can answer about its MDM criteria
     return triggered and not has_inline_context and not has_cpt_code
 
 
 def _intent_section_keys(question: str, cpt_code: str | None, authority: str) -> set[str] | None:
-    """
-    Narrow retrieval to the most relevant sections.
-    Not hardcoding answers — this is retrieval routing only.
-    """
     q = question.lower()
 
     if authority == "AMA_2021":
@@ -226,7 +203,6 @@ def _intent_section_keys(question: str, cpt_code: str | None, authority: str) ->
                 "clinical_coding_process_review",
                 "scoring_weights",
             }
-
     return None
 
 
@@ -240,9 +216,6 @@ def _is_qualification_question(question: str) -> bool:
 
 
 def _build_answer(cpt_code: str | None, chunk: GuidelineChunk, question: str) -> tuple[str, str]:
-    """
-    Return (answer, rule_text). Concise, source-grounded, max ~4 sentences.
-    """
     content = chunk.content
     section = (chunk.section_key or "").lower()
     q = question.lower()
@@ -440,11 +413,9 @@ def _build_answer(cpt_code: str | None, chunk: GuidelineChunk, question: str) ->
         summary = _summary_from_content(content)
     if not summary:
         summary = chunk.section_name or chunk.section_key or "Relevant guideline content"
-
     page = chunk.source_page or "N/A"
     answer = f"{summary} (Source: {chunk.authority}, {chunk.section_name or chunk.section_key}, page {page}.)"
     return answer, summary
-
 
 async def answer_question(question: str, db: AsyncSession) -> dict:
     if _needs_encounter_context(question):
@@ -475,7 +446,6 @@ async def answer_question(question: str, db: AsyncSession) -> dict:
                 "page": 10,
             },
         }
-
     decision = route_authority(question)
     authority = decision.primary_authority
     cpt_code = _extract_cpt(question)
@@ -590,7 +560,7 @@ async def answer_question(question: str, db: AsyncSession) -> dict:
 
     reasoning = (
         f"Matched authority {best_chunk.authority} "
-        f"using section '{best_chunk.section_key}'."
+        f"using section '{best_chunk.section_key}'. "
         f"Matched terms: {', '.join(decision.matched_terms) or 'none'}."
     )
 
@@ -599,6 +569,9 @@ async def answer_question(question: str, db: AsyncSession) -> dict:
         if decision.matched_terms
         else "medium"
     )
+    answer = _limit_to_4_sentences(answer)
+    rule_text = _limit_to_4_sentences(rule_text)
+    reasoning = _limit_to_4_sentences(reasoning)
 
     return {
         "answer": answer,
@@ -613,7 +586,7 @@ async def answer_question(question: str, db: AsyncSession) -> dict:
         "source_section": best_chunk.section_name or best_chunk.section_key,
         "source_page": best_chunk.source_page or "N/A",
         "confidence": confidence,
-        "rule_text": rule_text[:500],
+        "rule_text": rule_text,
         "citation": {
             "authority": best_chunk.authority,
             "section": best_chunk.section_name or best_chunk.section_key,
