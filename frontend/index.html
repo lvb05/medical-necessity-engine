@@ -917,6 +917,7 @@
                 badge.textContent = '✅ API Online';
                 badge.style.background = '#4ade80';
                 box.classList.add('online');
+                box.textContent = 'Connection settled. I will assist now.';
                 urlEl.textContent = `API: ${API_URL}`;
             } else {
                 badge.textContent = '⚠️ API Offline';
@@ -1142,7 +1143,7 @@
                     </div>
                 `).join('');
             } else {
-                gapsList.innerHTML = '<div class="info-badge">✅ No documentation gaps found</div>';
+                gapsList.innerHTML = '<div class="info-badge"> No documentation gaps found</div>';
             }
 
             const auditCard = document.getElementById('auditCard');
