@@ -540,30 +540,27 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>🏥 Medical Necessity Assistant</h1>
+            <h1>Medical Necessity Assistant</h1>
             <p>Clinical AI for E/M Coding, Denial Management & JAWDA Compliance</p>
             <div class="status-badge" id="apiStatus">Checking API...</div>
         </div>
 
-        <!-- API Status -->
         <div class="api-status" id="apiStatusBox">
             Connecting to backend...
         </div>
 
-        <!-- Tabs -->
         <div class="tabs">
             <button class="tab-button active" onclick="switchTab(event, 'ask')">
-                📝 Ask Question
+                Ask Question
             </button>
             <button class="tab-button" onclick="switchTab(event, 'analyze')">
-                📊 Analyze Encounter
+                Analyze Encounter
             </button>
             <button class="tab-button" onclick="switchTab(event, 'guide')">
-                ℹ️ System Info
+                System Info
             </button>
         </div>
 
-        <!-- Tab 1: Ask Question -->
         <div id="ask" class="tab-content active">
             <div class="main-content">
                 <div class="card">
@@ -579,7 +576,7 @@
                             required
                         ></textarea>
                         <div class="info-badge">
-                            💡 Ask about E/M codes, clinical definitions, JAWDA audit requirements, or documentation standards
+                            Ask about E/M codes, clinical definitions, JAWDA audit requirements, or documentation standards
                         </div>
                     </div>
 
@@ -594,9 +591,8 @@
                     </div>
                 </div>
 
-                <!-- Response Card -->
                 <div class="card">
-                    <h2><span class="card-icon">✨</span> Answer</h2>
+                    <h2><span class="card-icon"></span> Answer</h2>
                     <div class="response-section" id="askResponse">
                         <div class="response-item">
                             <div class="response-label">Answer</div>
@@ -619,7 +615,6 @@
             </div>
         </div>
 
-        <!-- Tab 2: Analyze Encounter -->
         <div id="analyze" class="tab-content">
             <div class="card">
                 <h2><span class="card-icon">📋</span> Patient Encounter Analysis</h2>
@@ -627,7 +622,6 @@
                 <div class="success-message" id="analyzeSuccess"></div>
 
                 <form id="analyzeForm">
-                    <!-- Visit Type & Chief Complaint -->
                     <div class="field-row">
                         <div class="form-group">
                             <label for="visitType">Visit Type *</label>
@@ -649,21 +643,18 @@
                         </div>
                     </div>
 
-                    <!-- Diagnoses -->
                     <div class="form-group">
                         <label>Diagnoses (ICD-10 codes)</label>
                         <div class="list-container" id="diagnosesList"></div>
                         <button type="button" class="btn-add" onclick="addDiagnosis()">+ Add Diagnosis</button>
                     </div>
 
-                    <!-- Procedures -->
                     <div class="form-group">
                         <label>Procedures/Tests Ordered</label>
                         <div class="list-container" id="proceduresList"></div>
                         <button type="button" class="btn-add" onclick="addProcedure()">+ Add Procedure</button>
                     </div>
 
-                    <!-- Documentation -->
                     <div class="form-group">
                         <label for="hpi">History of Present Illness (HPI)</label>
                         <textarea
@@ -688,7 +679,6 @@
                         ></textarea>
                     </div>
 
-                    <!-- Billing Info -->
                     <div class="field-row">
                         <div class="form-group">
                             <label for="billedCode">Billed CPT Code *</label>
@@ -716,7 +706,6 @@
                         </div>
                     </div>
 
-                    <!-- Time Documentation -->
                     <div class="field-row">
                         <div class="form-group">
                             <label for="startTime">Start Time (HH:MM)</label>
@@ -729,7 +718,6 @@
                         </div>
                     </div>
 
-                    <!-- Physician Info -->
                     <div class="field-row">
                         <div class="form-group">
                             <label for="billedPhysician">Billed Physician</label>
@@ -750,7 +738,6 @@
                         </div>
                     </div>
 
-                    <!-- JAWDA Checks -->
                     <div class="form-group">
                         <label>JAWDA Compliance Checks</label>
                         <div class="checkbox-group">
@@ -777,7 +764,6 @@
                 </form>
             </div>
 
-            <!-- Analysis Results -->
             <div id="analysisResults" class="main-content" style="margin-top: 30px; display: none;">
                 <div class="card">
                     <h2><span class="card-icon">✅</span> Code Analysis</h2>
@@ -813,13 +799,12 @@
             </div>
         </div>
 
-        <!-- Tab 3: System Info -->
         <div id="guide" class="tab-content">
             <div class="card">
                 <h2><span class="card-icon">ℹ️</span> System Overview</h2>
 
                 <div class="info-box">
-                    <strong>🎯 Purpose</strong>
+                    <strong> Purpose</strong>
                     <p>This system answers clinical coding questions and analyzes patient encounters for E/M code support, documentation gaps, and JAWDA compliance.</p>
                 </div>
 
@@ -895,7 +880,6 @@
             </div>
         </div>
 
-        <!-- Footer -->
         <div class="footer">
             <p>Medical Necessity Assistant • Source-Cited Clinical AI • JAWDA Compliant</p>
             <p style="margin-top: 10px; font-size: 0.85rem;">Backend: <span id="apiUrl">API Status: Checking...</span></p>
@@ -903,17 +887,14 @@
     </div>
 
     <script>
-        // ✅ FIXED: Hardcoded backend URL - always points to Render regardless of where frontend is hosted
         const API_URL = 'https://medical-necessity-engine.onrender.com';
 
-        // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             checkAPIStatus();
             initializeDiagnoses();
             initializeProcedures();
         });
 
-        // Check API Status
         async function checkAPIStatus() {
             try {
                 const response = await fetch(`${API_URL}/health`, { method: 'GET' });
@@ -947,7 +928,6 @@
             }
         }
 
-        // Tab Switching
         function switchTab(event, tabName) {
             event.preventDefault();
 
@@ -966,8 +946,6 @@
 
             event.target.classList.add('active');
         }
-
-        // ============ ASK QUESTION TAB ============
 
         async function askQuestion() {
             const question = document.getElementById('question').value.trim();
@@ -1018,8 +996,7 @@
             clearMessages('askError', 'askSuccess');
         }
 
-        // ============ ANALYZE ENCOUNTER TAB ============
-
+        
         let diagnoses = [];
 
         function initializeDiagnoses() {
@@ -1202,8 +1179,6 @@
             clearMessages('analyzeError', 'analyzeSuccess');
         }
 
-        // ============ UTILITIES ============
-
         function showLoading(elementId, show) {
             const el = document.getElementById(elementId);
             if (show) {
@@ -1232,7 +1207,6 @@
             });
         }
 
-        // Re-check API status every 30 seconds
         setInterval(checkAPIStatus, 30000);
     </script>
 </body>
