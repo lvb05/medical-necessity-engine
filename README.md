@@ -2,7 +2,9 @@
 
 > A clinical AI platform for healthcare providers in the UAE to understand E/M coding levels, manage claim denials, and stay compliant with JAWDA audit requirements.
 
-**Live Deployment:** https://medical-necessity-engine.onrender.com/  
+**Live Application:** https://medical-necessity-engine.vercel.app/  
+**Backend API:** https://medical-necessity-engine.onrender.com/  
+**API Documentation:** https://medical-necessity-engine.onrender.com/docs  
 **Repository:** https://github.com/lvb05/medical-necessity-engine
 
 ---
