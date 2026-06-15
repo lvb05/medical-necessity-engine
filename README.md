@@ -8,6 +8,13 @@
 **Repository:** https://github.com/lvb05/medical-necessity-engine
 
 ---
+## Dashboard Preview
+
+![Medical Necessity Assistant Dashboard](docs/Dashboard.png)
+
+*The clinical AI interface showing real-time question answering with authority citations and confidence scores.*
+
+---
 
 ## Project Overview
 
@@ -21,6 +28,19 @@ It supports questions like:
 - What documentation gaps could cause a denial?
 
 The system is designed to answer with exact guideline citations and avoid unsupported claims.
+
+---
+
+###  Live Demo
+
+**Access the live application:** https://medical-necessity-engine.vercel.app/
+
+### Test it with these example questions:
+- "What is 99214?"
+- "Does this visit qualify for a 99214?"
+- "What are the requirements for a 99215?"
+- "What happens if LAMA form is missing?"
+- "How does JAWDA audit handle time-based billing?"
 
 ---
 
@@ -78,6 +98,12 @@ The system is designed to answer with exact guideline citations and avoid unsupp
 * **Pydantic** — Request and response validation
 * **Uvicorn** — ASGI application server
 
+#### Frontend
+- **HTML5/CSS3** — Responsive UI
+- **Vanilla JavaScript** — No framework overhead
+- **Fetch API** — Backend communication
+- **Vercel** — Hosting and deployment
+
 #### Data Storage
 
 * **PostgreSQL** — Persistent storage for guideline content and query logs
@@ -96,6 +122,7 @@ The system is designed to answer with exact guideline citations and avoid unsupp
 * **pytest** — Unit and integration testing
 * **Docker** — Containerized application packaging
 * **Render** — Production hosting
+* **Vercel** — Frontend hosting
 
 
 
